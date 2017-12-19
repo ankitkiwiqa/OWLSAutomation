@@ -160,12 +160,12 @@
 				<configuration>
 
 					<suiteXmlFiles>
-						<suiteXmlFile>Build\PWL\AdvancedApplicationWithValidationIndexSuite.xml</suiteXmlFile>
+						<!-- <suiteXmlFile>Build\PWL\AdvancedApplicationWithValidationIndexSuite.xml</suiteXmlFile> -->
 						<suiteXmlFile>Build\PWL\BasicApplicationIndexSuite.xml</suiteXmlFile>
-						<suiteXmlFile>Build\PWL\BasicApplicationWithValidationIndexSuite.xml</suiteXmlFile>
-						<suiteXmlFile>Build\PWL\DingoApplicationWithValidationIndexSuite.xml</suiteXmlFile>
+					<!-- 	<suiteXmlFile>Build\PWL\BasicApplicationWithValidationIndexSuite.xml</suiteXmlFile>
+						<suiteXmlFile>Build\PWL\DingoApplicationWithValidationIndexSuite.xml</suiteXmlFile> -->
 						<suiteXmlFile>Build\PWL\SpecimenApplicationIndexsuite.xml</suiteXmlFile>
-						<suiteXmlFile>Build\PWL\SpecimenApplicationWithValidationIndexSuite.xml</suiteXmlFile>
+						<!-- <suiteXmlFile>Build\PWL\SpecimenApplicationWithValidationIndexSuite.xml</suiteXmlFile> -->
 					</suiteXmlFiles>
 					<reportsDirectory>test-output</reportsDirectory>
 					<properties>
