@@ -5,12 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -23,7 +25,7 @@ import com.owls.init.TestData;
 
 public class CRMIndexpage extends AbstractPage {
 
-	public CRMIndexpage(WebDriver driver) {
+	public CRMIndexpage(RemoteWebDriver driver) {
 		super(driver);
 		// TODO Auto-generated constructor stub
 	}
@@ -31,17 +33,18 @@ public class CRMIndexpage extends AbstractPage {
 	/**
 	 * WebElement to choose login method on CRM portal.
 	 */
+	
 	@FindBy(xpath="//select[@name='method_login_select_box']")
 	WebElement combobox_chooseLoginMethod;
 	
 	/**
 	 * Method to select 'Login method' from combo box.
 	 */
+	
 	public void chooseLoginMethod()
 	{
 		Common.pause(2);
-		Common.selectFromComboByVisibleText(combobox_chooseLoginMethod, "Standard Authentication");
-		
+		Common.selectFromComboByVisibleText(combobox_chooseLoginMethod, "Standard Authentication");	
 	}
 
 	/**
@@ -168,6 +171,7 @@ public class CRMIndexpage extends AbstractPage {
 	 */
 	public void clickonAdvancedFilterTab()
 	{	
+		Common.waitForElement(driver, tab_AdvanceFilter);
 		Common.pause(4);
 		Common.clickOn(driver, tab_AdvanceFilter);
 		Common.pause(5);
@@ -255,7 +259,6 @@ public class CRMIndexpage extends AbstractPage {
 		Actions builder=new Actions(driver);
 		builder.keyDown(Keys.CONTROL).click(select.getOptions().get(0)).click(select.getOptions().get(1)).keyUp(Keys.CONTROL);
 		builder.build().perform();
-		
 	}
 	
 	/**
@@ -337,7 +340,7 @@ public class CRMIndexpage extends AbstractPage {
 		// TODO Auto-generated method stub
 	
 		Common.clickOn(driver, startLink);
-		Common.pause(2);
+		Common.pause(4);
 		return new CRMverification(driver);
 	}
 
@@ -352,20 +355,53 @@ public class CRMIndexpage extends AbstractPage {
 	@FindBy (xpath=".//a[text()='Complete'][@class='actionCompletion']")
 	WebElement completeReviewApplication;
 	
+	@FindBy(xpath="//tr[@id=\"pagination\"][@class=\"pagination-unique\"]")
+	WebElement pagination;
+	
 	public void mouseHoverOnCompletion(String subject) {
 		// TODO Auto-generated method stub
 		
 		Common.SwitchtoTab(driver,1);
 		
-		driver.navigate().refresh();
-		Common.pause(5);
+	//	driver.navigate().refresh();
+		Common.pause(9);
+		while (!Common.isElementDisplayed(pagination)) {
+			driver.navigate().refresh();
+			Common.pause(5);
+		}
+		
 		clickOnActionlink(subject);
 		Common.mouseHover(driver, completionOption);
 		Common.pause(1);
 		Common.clickOn(driver, completeReviewApplication);
 		Common.pause(2);
 	}
+	
+	@FindBy (xpath=".//a[text()='Approval By Delegate'][@class='actionCompletion']")
+	WebElement completeAdditionalReview;
 
+	/**
+	 * Method will mouse hover on Completion options and select Approval by Delegate completion option. 
+	 * @param application subject
+	 */
+	
+	public void selectApprovalDelegate(String subject) {
+		// TODO Auto-generated method stub
+		
+		Common.SwitchtoTab(driver,1);
+		
+		String tempURL = driver.getCurrentUrl();
+		Common.pause(9);
+		while (!Common.isElementDisplayed(pagination)) {
+			driver.navigate().to(tempURL);
+			Common.pause(5);
+		}
+		clickOnActionlink(subject);
+		Common.mouseHover(driver, completionOption);
+		Common.pause(1);
+		Common.clickOn(driver, completeAdditionalReview);
+		Common.pause(2);
+	}
 	
 	/**
 	 * Method will click on Application and navigate to Application Details.
@@ -379,13 +415,11 @@ public class CRMIndexpage extends AbstractPage {
 		driver.navigate().refresh();
 		Common.log(start+applicationSubject+end);
 		WebElement applicationLink=driver.findElement(By.xpath(start+applicationSubject+end));
-		applicationLink.click();		
-		
+		applicationLink.click();	
+		Common.pause(5);	
 	}
 
-	/**
-	 * Method will click on 'Current Task' sub-panel from the Application Detail Page.
-	 */
+	 
 	
 	@FindBy (xpath=".//a[@id='subpanel_title_activities']/div")
 	WebElement currentTask;
@@ -395,9 +429,6 @@ public class CRMIndexpage extends AbstractPage {
 		Common.pause(5);
 		Common.jsClick(driver, currentTask);
 	}
-
-	
-	
 	 /**
 	  *  WebElement for 'On' textfield to enter Date.
 	  */
@@ -408,14 +439,14 @@ public class CRMIndexpage extends AbstractPage {
 	  * Method will enter current date in Date field.
 	  */
 	 
-	 public void enteronDate()
+	 public void enteronDate(String fileName)
 	 {
 	  Common.pause(2);
 	  
 	  Date date = new Date();
 	  SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 	  String datetext = sdf.format(date);
-	  Common.writeDataProperties("Assessment_On",datetext,"");
+	  Common.writeDataProperties(fileName,"Assessment_On",datetext,"");
 	  Common.type(textfield_onDate, datetext+Keys.ENTER);
 	  Common.log(" -> Assessment Date Entered : "+textfield_onDate.getAttribute("value"));
 
@@ -443,12 +474,12 @@ public class CRMIndexpage extends AbstractPage {
 	  * 
 	  */
 	 
-	 public void enterPresentcomment()
+	 public void enterPresentcomment(String fileName)
 	 {
 	  Common.pause(1);
 	  String present_Comment = "Present_Comment_"+Common.generateRandomChars(10);
 	  
-	  Common.writeDataProperties("Present_Comment",present_Comment,"");
+	  Common.writeDataProperties(fileName,"Present_Comment",present_Comment,"");
 	  Common.type(textfield_Present, present_Comment);
 	  Common.log(" -> Entered Present Comment : "+textfield_Present.getAttribute("value"));
 	 }
@@ -460,11 +491,11 @@ public class CRMIndexpage extends AbstractPage {
 	  * 
 	  * Method will enter comment in Comment textbox.
 	  */
-	 public void enterInspectionComment()
+	 public void enterInspectionComment(String fileName)
 	 {
 	  Common.pause(1);
 	  String comment = "Comment_"+Common.generateRandomChars(10);
-	  Common.writeDataProperties("Comment",comment, "");
+	  Common.writeDataProperties(fileName,"Comment",comment, "");
 	  Common.type(textfield_Comments, comment);
 	  Common.log(" -> Entered Comment Text: "+textfield_Comments.getAttribute("value"));
 	 }
@@ -473,16 +504,16 @@ public class CRMIndexpage extends AbstractPage {
 	 WebElement textfield_Concerns;
 	 
 	 /**
-	  * Method will enter random text in Concern Comment textbox.
+	  * @enterConcernsComment Method will enter random text in Concern Comment textbox.
 	  */
 	 
-	 public void enterConcernsComment()
+	 public void enterConcernsComment(String fileName)
 	 {
 	  Common.pause(1);
 	  String concernsComment = "Concerns_Comment_"+Common.generateRandomChars(10);
-	  Common.writeDataProperties("Concern_Comment", concernsComment,"");
+	  Common.writeDataProperties(fileName,"Concern_Comment", concernsComment,"");
 	  
-	  Common.writeDataProperties("inspectionConcerns", concernsComment, "");
+	  Common.writeDataProperties(fileName,"inspectionConcerns", concernsComment, "");
 	  Common.type(textfield_Concerns, concernsComment);
 	  Common.log(" -> Entered Concern Comment: "+textfield_Concerns.getAttribute("value"));
 	 }
@@ -497,7 +528,7 @@ public class CRMIndexpage extends AbstractPage {
 	 {
 	  Common.pause(1);
 	  Select select=new Select(select_Delegate);
-	  Common.selectFromComboByVisibleText(select_Delegate, "DO Auto");
+	  Common.selectFromComboByVisibleText(select_Delegate, "OWLS ADMINISTRATOR");
 	  Common.log(" -> Selected Delegate option:" + select.getFirstSelectedOption().getText());
 	 }
 	 
@@ -527,13 +558,16 @@ public class CRMIndexpage extends AbstractPage {
 	 {
 	  Common.pause(1);
 	  Common.clickOn(driver, button_saveInspection);
+	  Common.pause(10);
 	 }
 	 
 	 @FindBy(xpath=".//*[@id='submit_recommendation']")
 	 WebElement button_clickonSubmitrecommedation;
+	
 	 /**
 	  * Method will click on Submit Recommendation button.
 	  */
+	
 	 public void clickonSubmiteToDelegate()
 	 {
 	  Common.pause(1);
@@ -562,11 +596,11 @@ public class CRMIndexpage extends AbstractPage {
 	  * Method will enter random text in Reason textbox of Delegate Detail screen.
 	  */
 	 
-	 public void enterDelegateReason()
+	 public void enterDelegateReason(String fileName)
 	 {
 	  Common.pause(1);
 	  String delegate_reason = "Delegate_Reason_"+Common.generateRandomChars(10);
-	  Common.writeDataProperties("Delegate_Reason", delegate_reason,"");
+	  Common.writeDataProperties(fileName,"Delegate_Reason", delegate_reason,"");
 	  
 	  Common.type(delegateReasonTextArea, delegate_reason);
 	  Common.log(" -> Entered Delegate Reason : "+delegateReasonTextArea.getAttribute("value"));
@@ -604,6 +638,7 @@ public class CRMIndexpage extends AbstractPage {
 	 * Method will click on Business Process icon.
 	 * @return CRMverification class which will refresh page factory.
 	 */
+	
 	@FindBy (xpath=".//img[@id='img_bsn_process']")
 	WebElement businessProcessButton;
 	
@@ -617,6 +652,7 @@ public class CRMIndexpage extends AbstractPage {
 	/**
 	 * Method will choose 'Approved' option from Business Process completion option.
 	 */
+	
 	@FindBy (xpath=".//a[text()='Approved']")
 	WebElement approveOption;
 	
@@ -624,7 +660,139 @@ public class CRMIndexpage extends AbstractPage {
 		// TODO Auto-generated method stub
 
 		Common.clickOn(driver, approveOption);
+		Common.pause(10);
 	}	 
+	
+	/**
+	 * Method will get current numbers of permit records and write it to Property file.
+	 */
+	
+	@FindBy (xpath=".//*[@id='table-container_info']")
+	WebElement records;
+
+	public void currentPermitRecords(String fileName) {
+		// TODO Auto-generated method stub
+		Common.waitForElement(driver, records);
+		String[] str=records.getText().split(" ");
+		System.err.println(" Number of String lenght :"+str.length);
+		System.err.println(" String :"+records.getText());
+		System.err.println(" get current permit string : "+str[(str.length)-2]);
+		
+		Common.writeDataProperties(fileName,"Permit_records", str[(str.length)-2], "");
+	}
+	
+	@FindBy (xpath=".//span[text()='OWLS ADMINISTRATOR']")
+	WebElement owlsAdmin;
+
+	public void clickOnAdministrator() {
+		// TODO Auto-generated method stub
+		Common.pause(5);
+		Common.jsClick(driver, owlsAdmin);
+	}
+	
+	@FindBy (xpath=".//a[@id='admin_link']")
+	WebElement admin;
+
+	public void clickOnAdmin() {
+		// TODO Auto-generated method stub
+		Common.pause(2);
+		Common.jsClick(driver, admin);
+		Common.pause(3);
+	}
+
+	@FindBy (xpath=".//a[@id='TestDataCleanup']")
+	WebElement cleanUpLink;
+	
+	public void clickOnTestDataCleanUP() {
+		// TODO Auto-generated method stub
+	Common.jsClick(driver, cleanUpLink);
+		Common.pause(3);
+	}
+	
+	@FindBy (xpath=".//select[@name='id_contacts[]']")
+	WebElement selectUser;
+
+	public void selectUser(String user) {
+		// TODO Auto-generated method stub
+		Common.selectFromComboByVisibleText(selectUser, user);
+		Common.pause(3);
+	}
+
+	@FindBy (xpath=".//input[@id='alfresco_saveSettingBtn']")
+	WebElement runCleanUpButton;
+	
+	public void clickRunCleanUp() {
+		// TODO Auto-generated method stub
+		Common.clickOn(driver, runCleanUpButton);
+		Alert al=driver.switchTo().alert();
+		al.accept();
+		Common.waitForElement(driver, runCleanUpButton);
+	}
+	
+	@FindBy (xpath=".//a[text()='Go to Condition']")
+	WebElement goToCondition;
+
+	public void clickGotoCondition() {
+		// TODO Auto-generated method stub
+		Common.clickOn(driver, goToCondition);
+		Common.pause(5);
+	}
+	
+	@FindBy (xpath=".//input[@value='freetext']")
+	WebElement freeTextOption;
+
+	public void chooseFreeText() {
+		// TODO Auto-generated method stub
+		Common.clickOn(driver, freeTextOption);
+	}
+	
+	@FindBy (xpath=".//*[@id='myTabs1']//li[text()='Application Details']")
+	WebElement applicationDetails;
+
+	public void clickOnApplicationDetails() {
+		// TODO Auto-generated method stub
+		
+		Common.jsClick(driver, applicationDetails);;
+		Common.pause(5);
+	}
+	
+	@FindBy (xpath=".//textarea[@id='conditiontext']")
+	WebElement conditionTextArea;
+	
+	@FindBy (xpath=".//table[@id='predefinedtable']//tr")
+	List<WebElement> condition_row;
+
+	public static int comment_count;
+	
+	public void enterFreeText(String dataFileName) {
+		// TODO Auto-generated method stub
+		String str="Additional Condition_"+Common.generateRandomChars(10);
+		Common.type(conditionTextArea, str);
+		Common.writeDataProperties(dataFileName, "Condition", str, "");
+		comment_count=condition_row.size();
+		System.err.println(" Number of Rows available :"+comment_count);
+		Common.pause(1);
+	}
+	
+	@FindBy (xpath=".//button[@id='addpredefinedcondition']")
+	WebElement addButton;
+
+	public void clickOnAddButton() {
+		// TODO Auto-generated method stub
+		Common.clickOn(driver, addButton);
+		Common.pause(5);
+	}
+	
+	@FindBy (xpath=".//span[text()='close']")
+	WebElement closeIcon;
+
+	public void clicOnClose() {
+		// TODO Auto-generated method stub
+		Common.clickOn(driver, closeIcon);
+		Common.pause(2);
+	}
+	
+	
 	
 	
 }

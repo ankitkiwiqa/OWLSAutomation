@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.LocalFileDetector;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -35,6 +37,8 @@ import org.testng.internal.Utils;
 
 import com.owls.CreateApp.indexpage.CreateApplicationIndexPage;
 import com.owls.CreateApp.verification.CreateApplicationVerificationPage;
+import com.owls.corporate.indexpage.CorporateApplicationIndexPage;
+import com.owls.corporate.verification.CorporateApplicationVerificationPage;
 import com.owls.crm.indexpage.CRMIndexpage;
 import com.owls.crm.verification.CRMverification;
 
@@ -46,6 +50,12 @@ public class SeleniumInit {
 
 	public String suiteName = "";
 	public String testName = "";
+	
+	public String dataFileName="";
+	public String configFileName="";
+	public String applicationType="";
+	public String queueName="";
+	
 	/* Minimum requirement for test configur ation */
 	protected String testUrl; // Test url
 	public static String seleniumHub; // Selenium hub IP
@@ -62,25 +72,21 @@ public class SeleniumInit {
 	public CreateApplicationIndexPage applicationIndexPage;
 	public CreateApplicationVerificationPage applicationVerificatioPage;
 	
+	public CorporateApplicationIndexPage corporateapplicationIndexPage;
+	public CorporateApplicationVerificationPage corporateapplicationVerificatioPage;
+
+	
 	 public CRMIndexpage crmpage;
 	 public CRMverification crmverify;
 	
-	public ApplicationData appdata=new ApplicationData();
-	//===============================================================CC
-	
-	
-//	public ContactDetailsVerification contactDetailsVerification;
-//	public ContactDetailsIndexpage contactDetailsIndexpage;
- 
+	public ApplicationData appdata=new ApplicationData(); 
 	
 	 
 	protected static String screenshot_folder_path = null;
 	public static String currentTest; // current running test
 
 	protected static Logger logger = Logger.getLogger("testing");
-	protected WebDriver driver;
-	
-	 public ExamDetails examdetail = new ExamDetails();
+	protected RemoteWebDriver driver;
 
 	// Common Common = new Common(driver);
 
@@ -102,6 +108,14 @@ public class SeleniumInit {
 				"selenium.port");
 		targetBrowser = testContext.getCurrentXmlTest().getParameter(
 				"selenium.browser");
+		dataFileName=testContext.getCurrentXmlTest().getParameter("dataFileName");
+		System.err.println(" Data File Name : "+dataFileName);
+		configFileName=testContext.getCurrentXmlTest().getParameter("configFileName");
+		System.err.println(" Config File Name : "+configFileName);
+		applicationType=testContext.getCurrentXmlTest().getParameter("ApplicationType");
+		System.err.println(" Application Type : "+applicationType);
+		queueName=testContext.getCurrentXmlTest().getParameter("QueueName");
+		System.err.println(" Queue Name :" + queueName);
 	}
 
 	/**
@@ -300,25 +314,32 @@ public class SeleniumInit {
 
 		} */else if (targetBrowser.contains("chrome")) {
 
-			ChromeOptions options = new  ChromeOptions();
-			String downloadFilepath = new File("Resource/Downloads").getAbsolutePath();
-			   HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
-			   chromePrefs.put("profile.default_content_settings.popups", 0);
-			   chromePrefs.put("download.default_directory", downloadFilepath);
-			   options.setExperimentalOption("prefs", chromePrefs);
-			options.addArguments("no-sandbox");
+			final ChromeOptions options = new ChromeOptions();
+			String downloadFilepath = new File("C:\\Users\\Typical-User\\Downloads\\Selenium_file_Download").getAbsolutePath();
+			HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+			chromePrefs.put("profile.default_content_settings.popups", 0);
+			chromePrefs.put("download.default_directory", downloadFilepath);
+			File file = new File("Resource\\chromedriver_2_33.exe");
+			System.err.println("File Path ==================" + file.getAbsolutePath());
+			options.setExperimentalOption("prefs", chromePrefs);
+		//	options.setBinary("C:\\Users\\Administrator\\Downloads\\Chrome64_48.0.2564.109\\chrome.exe");
+			System.setProperty("webdriver.chrome.driver", file.getAbsolutePath());
 			capability = DesiredCapabilities.chrome();
 			capability.setCapability(ChromeOptions.CAPABILITY, options);
-			File ChromeDriver = new File("Resource\\chromedriver.exe");
-			System.err.println(ChromeDriver.getAbsolutePath());
-			System.setProperty("webdriver.chrome.driver","‪G:\\chromedriver.exe");
+
+			options.addArguments("no-sandbox");
+		//	options.addArguments("disable-extensions");
+			options.addArguments("--start-maximized");
 			capability.setBrowserName("chrome");
 			capability.setJavascriptEnabled(true);
 			browserName = capability.getVersion();
 			osName = capability.getPlatform().name();
 			browserVersion = capability.getVersion();
 			driver = new RemoteWebDriver(remote_grid, capability);
-
+			
+			driver.setFileDetector(new LocalFileDetector());
+			 
+			//driver = new ChromeDriver(capability);
 		} else if (targetBrowser.contains("safari")) {
 
 			// System.setProperty("webdriver.safari.driver","/Users/jesus/Desktop/SafariDriver.safariextz");
@@ -335,24 +356,28 @@ public class SeleniumInit {
 			// profile);
 			this.driver = new SafariDriver(capability);
 		}
+		
 		suiteName = testContext.getSuite().getName();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		testUrl = TestData.getAdminURL();
 		driver.get(testUrl);
-		driver.manage().window().maximize();
-		currentWindowHandle = driver.getWindowHandle();
-		System.out.println("Current Window Handle ID:--->"
+		//driver.manage().window().maximize();
+		/*currentWindowHandle = driver.getWindowHandle();
+			System.out.println("Current Window Handle ID:--->"
 				+ currentWindowHandle);
-
+*/
 		suiteName = testContext.getSuite().getName();
-		System.out.println("Current Xml Suite is:---->" + suiteName);
-
+		System.out.println("Current Xml Suite is:---->" + suiteName);		
 		
 		applicationIndexPage = new CreateApplicationIndexPage(driver);
 		applicationVerificatioPage = new CreateApplicationVerificationPage(driver);
 		
-		  crmpage = new CRMIndexpage(driver);
-		  crmverify = new CRMverification(driver);
+		corporateapplicationIndexPage=new CorporateApplicationIndexPage(driver);
+		corporateapplicationVerificatioPage=new CorporateApplicationVerificationPage(driver);
+	
+		crmpage = new CRMIndexpage(driver);
+		crmverify = new CRMverification(driver);
+	
 	}
 
 		  
@@ -441,10 +466,12 @@ public class SeleniumInit {
 
 		try {
 			testName = testResult.getName();
+			System.err.println("----------->         " +testResult.getTestName() );
 			if (!testResult.isSuccess()) {
 
 				/* Print test result to Jenkins Console */
 				System.out.println();
+				System.out.println("======================++++   >>  ");
 				System.out.println("TEST FAILED - " + testName);
 				System.out.println();
 				System.out.println("ERROR MESSAGE: "
@@ -458,17 +485,42 @@ public class SeleniumInit {
 				Reporter.log("<br> <b>Please look to the screenshot - </b>");
 				Common.makeScreenshot(driver, screenshotName);
 				// Reporter.log(testResult.getThrowable().getMessage());
+				
 				getShortException(ex.getFailedTests());
+				Common.logStatus("Fail");
 				if(testName.contains("verifyCreateApplication"))
+			    {  Properties propwrite = new Properties();
+			     propwrite.setProperty("ApplicationName", "False");
+			     propwrite.store(new FileOutputStream("Data/"+configFileName+".properties", false), "");
+			     
+			     Properties propwrites = new Properties();
+			     propwrites.setProperty("Primary_Address", "nan");
+			     propwrites.store(new FileOutputStream("Data/"+dataFileName+".properties", false), "");
+			 }
+				
+			/*xxxxx*/
+				
+			/*	if(testName.contains("verifyCreateSpecimenApplication()"))
 			    {  Properties propwrite = new Properties();
 			     propwrite.setProperty("Application_Created_Sucessfully", "False");
 
-			     propwrite.store(new FileOutputStream("Data/config.properties", false), "");
+			     propwrite.store(new FileOutputStream("Data/specimenApplicationIndexSuite.properties", false), "");
 			     
 			     Properties propwrites = new Properties();
 			     propwrites.setProperty("ApplicationName", "nan");
-			     propwrites.store(new FileOutputStream("Data/applicationData.properties", false), "");
+			     propwrites.store(new FileOutputStream("Data/specimenApplicationData.properties", false), "");
 			    }
+				
+				if(testName.contains("verifyCreateAdvancedApplication()"))
+			    {  Properties propwrite = new Properties();
+			     propwrite.setProperty("Application_Created_Sucessfully", "False");
+
+			     propwrite.store(new FileOutputStream("Data/advancedApplicationIndexSuite.properties", false), "");
+			     
+			     Properties propwrites = new Properties();
+			     propwrites.setProperty("ApplicationName", "nan");
+			     propwrites.store(new FileOutputStream("Data/advancedApplicationData.properties", false), "");
+			    }*/
 			} else {
 				try {
 					Common.pause(5);
@@ -500,12 +552,12 @@ public class SeleniumInit {
 			 * 
 			 * }
 			 */
-
+		
 			System.out.println("here is test status--------------------"
 					+ testResult.getStatus());
 
-			driver.manage().deleteAllCookies();
-
+		//	driver.manage().deleteAllCookies();
+				
 			driver.close();
 			driver.quit();
 
@@ -536,7 +588,6 @@ public class SeleniumInit {
 		}
 
 	}
-	
 
 	/**
 	 * Log given message to Reporter output.

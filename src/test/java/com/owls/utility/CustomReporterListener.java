@@ -9,6 +9,7 @@ import org.testng.xml.XmlSuite;
 public class CustomReporterListener  implements IReporter
 {
 
+	@Override
 	public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) 
 	{
 		

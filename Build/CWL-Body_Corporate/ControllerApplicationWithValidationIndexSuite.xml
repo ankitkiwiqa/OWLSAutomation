@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="BodyCorporateWildLifeControllerLicence" verbose="10" parallel="tests"
+	thread-count="1">
+
+	<!-- Put IP of localhost/Grid Hub machine -->
+	<parameter name="selenium.host" value="localhost" />
+
+	<!-- Put Port of localhost RC/Grid Hub machine -->
+	<parameter name="selenium.port" value="4444" />
+
+	<!-- Put target browser name as below: 1) Firefox : firefox 2) chrome : 
+		chrome 3) IExplorer : ie8 / ie9 -->
+	<parameter name="selenium.browser" value="chrome" />
+	<!-- <parameter name="selenium.url" value="http://google.com" /> -->
+
+	<parameter name="dataFileName" value="wildlifeControllerApplicationData" />
+	<parameter name="configFileName" value="wildlifeControllerApplicationConfig" />
+	<parameter name="ApplicationType" value="Wildlife Controller Licence" />
+	<parameter name="QueueName" value="Port Phillip Queue" />
+
+	<listeners>
+		<listener class-name="com.owls.utility.RetryTestListener" />
+		<listener class-name="com.owls.utility.CustomReporterTestDetails" />
+		<listener class-name="com.owls.utility.CustomReporterTestFailureDetails" />
+		<listener class-name="com.owls.utility.CustomReporterTestpassDetails" />
+		<listener class-name="com.owls.utility.CustomReporterBuildSummary" />
+		<listener class-name="com.owls.utility.CustomReporterTestskipDetails" />
+	</listeners>
+	
+	 <test name="TC_Portal_0013: To verify Online user submits a wildlife Controller application with conditions to trigger the 'Review Application'  task.">
+	 <parameter name="CorporateCreateApplication"
+			value="TC_CRM_004: To verify Delegate Office take the 'Approval By Delegate' task to 'Await payment confirmation' task." />
+		<classes>
+			<class name="com.owls.corporate.index.CorporateApplicationIndex">
+				<methods>
+					<include name="verifyCreateApplicationBodyCorporate" />
+				</methods>
+			</class>
+		</classes>
+	</test>  
+	
+	 <test name="TC_Portal_13: To verify OWLS Internal user reviews the 'Review Application task.">
+	 	<parameter name="ReviewValidation"
+			value="TC_Portal_13: To verify OWLS Internal user reviews the 'Review Application task." />
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="validateReviewAppliactionTask" />
+				</methods>
+			</class>
+		</classes>
+	</test>  
+	
+	<test name="TC_CRM_015: To verify OWLS Internal user to progress the 'Review Application' task to 'Interview/Site Inspection' task.">
+	<parameter name="CompleteReview"
+			value="TC_CRM_015: To verify OWLS Internal user to progress the 'Review Application' task to 'Interview/Site Inspection' task." />	
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="completeReviewApplicationTask" />
+				</methods>
+			</class>
+		</classes>
+	</test>  
+	
+  	<test name="TC_CRM_016: To verify Interview/Site inspection task to be available under Wildlife licencing queue and inpsecting screen to be available for the role -'Manager wildlife licencing'.">
+  	<parameter name="InterviewSiteInspectionWithAdditionalCondition"
+			value="TC_CRM_003: To verify Interview/Site inspection task to be available under Wildlife licencing queue and inpsecting screen to be available for the role -'Manager wildlife licencing'." />
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="completeInterviewInspectionWithConditionTask" />
+				</methods>
+			</class>
+		</classes>
+	</test>   
+	
+	<test name="TC_CRM_016: To verify user can complete 'Review Additional Task' complete.">
+	 	<parameter name="ReviewAdditionalTask"
+			value="TC_CRM_003: To verify Interview/Site inspection task to be available under Wildlife licencing queue and inpsecting screen to be available for the role -'Manager wildlife licencing'." />
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="verifyAndCompleteReviewAdditionalTask" />
+				</methods>
+			</class>
+		</classes>
+	</test>  
+	
+	<test name="TC_CRM_017: To verify Delegate Office take the 'Approval By Delegate' task to 'Await payment confirmation' task.">
+		<parameter name="DelegateApproval"
+			value="TC_CRM_004: To verify Delegate Office take the 'Approval By Delegate' task to 'Await payment confirmation' task." />
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="verifyAndCompleteApproveDelegateTask" />
+				</methods>
+			</class>
+		</classes>
+	</test> 
+	
+ 	<test name="TC_Portal_009: To verify Payment Notice and Fee Pay links are generated and Payment Notice contains correct postal Address.">
+ 		<parameter name="CorporatePaymentNotice"
+			value="TC_CRM_004: To verify Delegate Office take the 'Approval By Delegate' task to 'Await payment confirmation' task." />	
+		<classes>
+			<class name="com.owls.corporate.index.CorporateApplicationIndex">
+				<methods>
+					<include name="verifyCorporateLicencePaymentNotice" />
+				</methods>
+			</class>
+		</classes>
+	</test>  
+	
+	<test name="TC_CRM_018: To verify OWLS internal user to complete 'Awaiting Payment Confirmation' task and to verify the Permit document is available for the online portal user to download.">
+		<parameter name="AwaitingPayment"
+			value="TC_CRM_004: To verify Delegate Office take the 'Approval By Delegate' task to 'Await payment confirmation' task." />	
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="completeAwaitingPaymentConfirmationTask" />
+				</methods>
+			</class>
+		</classes>
+	</test>   
+	
+	<test name="Test: Run Cleanup">
+		<classes>
+			<class name="com.owls.crm.index.CRMIndex">
+				<methods>
+					<include name="runCleanUp" />
+				</methods>
+			</class>
+		</classes>
+	</test>  
+	  
+</suite>

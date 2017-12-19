@@ -2,16 +2,31 @@ package com.owls.CreateApp.index;
 
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.openqa.selenium.By;
+import org.openqa.selenium.remote.LocalFileDetector;
 import org.testng.Assert;
+import org.testng.SkipException;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.beust.jcommander.Parameter;
 import com.owls.init.Common;
 import com.owls.init.ITestStatus;
 import com.owls.init.SeleniumInit;
+
+import io.sterodium.extensions.client.FileExtensionClient;
 
 public class CreateApplicationIndex extends SeleniumInit {
 
@@ -27,50 +42,53 @@ public class CreateApplicationIndex extends SeleniumInit {
 		int numOfFailure = 0;
 		int logStep = 1;
 
+		String dataFileName="basicApplicationData";
+		String configFileName="basicApplicationConfig";
+		
 		Common.logcase("Testcase Id: TC_001 ");
 		Common.logcase("Testcase Name: To verify that user is able to submite application to OWLS portal.");
 
 		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
 		
-		Common.logstep((logStep++)+" Enter Username.");
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
 		applicationIndexPage.enterAdminUsername();
 		
-		Common.logstep((logStep++)+" Enter Password.");
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
 		applicationIndexPage.enterAdminPassword();
 		
-		Common.logstep((logStep++)+" Click on Login icon.");
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
 		applicationIndexPage.clickonlogin();
 		
-		Common.logstep((logStep++)+" Click on Personal Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
 		applicationIndexPage.clickPersonalMenu();
 		
-		Common.logstep((logStep++)+" Click on Application Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
 		applicationIndexPage.clickonApplication();
 		
-		Common.logstep((logStep++)+" Click on Create Application button.");
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
 		applicationIndexPage.clickonCreateApplication();
 		
-		Common.logstep((logStep++)+" Select Application type from Drop down.");
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
 		applicationIndexPage.SelectApplicationType("Wildlife Basic Licence");
 		
-		Common.logstep((logStep++)+" Click on Next button");
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
 		applicationIndexPage.clickonNext();
 		
-		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		Common.logstep("Step " + (logStep++)+" Select 'Same as above' checkbox'.");
 		applicationIndexPage.checkboxSameasAbove();
 		
-		Common.logstep((logStep++)+" Upload file.");
+		Common.logstep("Step " + (logStep++)+" Upload file.");
 		applicationIndexPage.UploadFile();
 		
-		Common.logstep((logStep++)+" Click on submit.");
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
 		applicationIndexPage.clickonSubmit();
 		
-		Common.logstep((logStep++)+" Navigate to My Application page.");
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
 		applicationIndexPage.clickonApplication();
 	
-		Common.logverification("Verify that created application is displayed on Apllication list of 'My Application' page.");
+		Common.logMandetoryAssert("Verify that created application is displayed on Apllication list of 'My Application' page.");
 		
-		if (applicationVerificatioPage.VerifyCreatedApplicationStatus()) {
+		if (applicationVerificatioPage.VerifyCreatedApplicationStatus(dataFileName,"Wildlife Basic Licence")) {
 			logStatus(ITestStatus.PASSED);
 		} else {
 			logStatus(ITestStatus.FAILED);
@@ -90,68 +108,71 @@ public class CreateApplicationIndex extends SeleniumInit {
 		int numOfFailure = 0;
 		int logStep = 1;
 
+		String dataFileName="basicApplicationData";
+		String configFileName="basicApplicationConfig";
+		
 		Common.logcase("Testcase Id: TC_002 ");
 		Common.logcase("Testcase Name: To verify that user is able to submite application for 'Wildlife Specimen Licence'.");
 
 		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
 		
-		Common.logstep((logStep++)+" Enter Username.");
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
 		applicationIndexPage.enterAdminUsername();
 		
-		Common.logstep((logStep++)+" Enter Password.");
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
 		applicationIndexPage.enterAdminPassword();
 		
-		Common.logstep((logStep++)+" Click on Login icon.");
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
 		applicationIndexPage.clickonlogin();
 		
-		Common.logstep((logStep++)+" Click on Personal Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
 		applicationIndexPage.clickPersonalMenu();
 		
-		Common.logstep((logStep++)+" Click on Application Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
 		applicationIndexPage.clickonApplication();
 		
-		Common.logstep((logStep++)+" Click on Create Application button.");
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
 		applicationIndexPage.clickonCreateApplication();
 		
-		Common.logstep((logStep++)+" Select Application type from Drop down.");
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
 		applicationIndexPage.SelectApplicationType("Wildlife Specimen Licence");
 	
-		Common.logstep((logStep++)+" Click on Next button");
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
 		applicationIndexPage.clickonNext();
 		
-		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		Common.logstep("Step " + (logStep++)+" Select 'Same as above' checkbox'.");
 		applicationIndexPage.checkboxSameasAbove();
 		
-		Common.logstep((logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
+		Common.logstep("Step " + (logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
 		applicationIndexPage.HaveanyWildInPossession();
 		
-		Common.logstep((logStep++)+" Enter 'Licence Number'.");
+		Common.logstep("Step " + (logStep++)+" Enter 'Licence Number'.");
 		applicationIndexPage.enterLicenceNumber();
 		
-		Common.logstep((logStep++)+" Select 'Species'.");
+		Common.logstep("Step " + (logStep++)+" Select 'Species'.");
 		applicationIndexPage.selectSpecies();
 		
-		Common.logstep((logStep++)+" Enter number of species.");
+		Common.logstep("Step " + (logStep++)+" Enter number of species.");
 		applicationIndexPage.enterNumberofSpecies();
 		
-		Common.logstep((logStep++)+"Select Species description (Alive/Dead)");
+		Common.logstep("Step " + (logStep++)+"Select Species description (Alive/Dead)");
 		applicationIndexPage.selectspeciesDiscription();
 		
-		Common.logstep((logStep++)+" Click on 'Add Species' button");
+		Common.logstep("Step " + (logStep++)+" Click on 'Add Species' button");
 		applicationIndexPage.clickonAddSpecies();
 		
-		Common.logstep((logStep++)+" Upload file.");
+		Common.logstep("Step " + (logStep++)+" Upload file.");
 		applicationIndexPage.UploadFile();
 		
-		Common.logstep((logStep++)+" Click on submit.");
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
 		applicationIndexPage.clickonSubmit();
 		
-		Common.logstep((logStep++)+" Navigate to My Application page.");
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
 		applicationIndexPage.clickonApplication();
 	
-		Common.logverification("Verify that created application is displayed on Apllication list of 'My Application' page.");
+		Common.logMandetoryAssert("Verify that created application is displayed on Apllication list of 'My Application' page.");
 		
-		if (applicationVerificatioPage.VerifyCreatedApplicationStatus()) {
+		if (applicationVerificatioPage.VerifyCreatedApplicationStatus(dataFileName,"Wildlife Specimen Licence")) {
 			logStatus(ITestStatus.PASSED);
 		} else {
 			logStatus(ITestStatus.FAILED);
@@ -163,66 +184,73 @@ public class CreateApplicationIndex extends SeleniumInit {
 		}
 	}
 	
+	@Parameters ({"Create"})
 	@Test // pass
-	public void verifyCreateApplication() {
+	public void verifyCreateApplication(String logcase) {
 
 		int numOfFailure = 0;
 		int logStep = 1;
 
-		Common.logcase("Testcase Id: TC_Portal_001 ");
-		Common.logcase("Testcase Name: To verify that Online User submits a basic application with a condition which will trigger review of the application.");
-
-		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		/*
+		String dataFileName="basicApplicationData";
+		String configFileName="basicApplicationConfig";
 		
-		Common.logstep((logStep++)+" Enter Username.");
+		Common.logcase("Testcase Id: TC_Portal_001");
+		Common.logcase("Testcase Name:	 To verify Online user submits a basic application with conditions to trigger the 'Review Application'  task.");
+		*/
+		
+		Common.logcase(logcase);
+		Common.logstep("Step " + (logStep++) + " Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
 		applicationIndexPage.enterAdminUsername();
 		
-		Common.logstep((logStep++)+" Enter Password.");
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
 		applicationIndexPage.enterAdminPassword();
 		
-		Common.logstep((logStep++)+" Click on Login icon.");
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
 		applicationIndexPage.clickonlogin();
 		
-		Common.logstep((logStep++)+" Click on Personal Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
 		applicationIndexPage.clickPersonalMenu();
 		
-		Common.logstep((logStep++)+" Click on Details Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
 		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
 		
-		Common.logstep((logStep++)+" Click on Contact Details Option.");
-		applicationVerificatioPage=applicationIndexPage.clickonContactDetail();		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(dataFileName);		
 	
-		Common.logstep((logStep++)+" Click on Application Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
 		applicationIndexPage.clickonApplication();
 		
-		Common.logstep((logStep++)+" Click on Create Application button.");
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
 		applicationIndexPage.clickonCreateApplication();
 		
-		Common.logstep((logStep++)+" Select Application type from Drop down.");
-		applicationIndexPage.SelectApplicationType("Wildlife Basic Licence");
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType(applicationType);
 	
-		Common.logstep((logStep++)+" Click on Next button");
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
 		applicationIndexPage.clickonNext();
 		
-		Common.logverification("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
-		if(applicationVerificatioPage.verifyOperatingAddress()) {
-			Common.assertPassed("Operating address retrived correctly from Contact Details.");;
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(dataFileName)) {
+			Common.optionalAssertPassed();;
 		}else {
-			Common.assertFailed("Operating address is incorrect as compare to Contact Details.");
+			Common.optionalAssertFailed();
 			numOfFailure++;
 		}
 		
-		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		Common.logstep("Step "+(logStep++)+" Select 'Same as above' checkbox'.");
 		applicationIndexPage.checkboxSameasAbove();
 		
-		Common.logverification("Verify Postal Address pasted correctly as same as Specified Premises.");
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
 		if(applicationVerificatioPage.verifyPostalAddress()) {
-			Common.assertPassed("Postal Address verified");;
+			Common.optionalAssertPassed();
 		}else {
-			Common.assertFailed("Postal Address incorrect ! Please take a look");
+			
+			Common.optionalAssertFailed();
 			numOfFailure++;
 		}
-		
 		
 		Common.logstep((logStep++)+" Select 'I have prior convictions' radio button and enter offence details as below.");
 		applicationIndexPage.ClickonIHavepriorConviction();
@@ -242,74 +270,94 @@ public class CreateApplicationIndex extends SeleniumInit {
 		  
 		  applicationIndexPage.clickonAddpriorConvictionsButton();
 		  
-		  Common.logverification("Verify that Conviction data should be displayed below conviction form.");
+		  Common.logOptionalAssert("Verify that Conviction data should be displayed below conviction form.");
 		  if (applicationVerificatioPage.VerifyAddedConvictiondata(offence,offenceYear,offenceState)) {
-		   logStatus(ITestStatus.PASSED);
+		   Common.optionalAssertPassed();
 		  } else {
-		   logStatus(ITestStatus.FAILED);
+			  Common.optionalAssertFailed();
 		   numOfFailure++;
 		  }
 		
-		Common.logstep((logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
+			Common.logstep("Step " + (logStep++)+" Choose Prefered Licence Expiry.");
+			applicationIndexPage.licenceExpiry(applicationType);
+		
+		  
+		/*Common.log("Click on 'No Conviction' Option");
+		applicationIndexPage.selectNoConviction();*/
+		  
+		Common.logstep("Step " + (logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
 		applicationIndexPage.HaveanyWildInPossession();
 		
-		Common.logstep((logStep++)+" Enter 'Licence Number'.");
+		Common.logstep("Step " + (logStep++)+" Enter 'Licence Number'.");
 		applicationIndexPage.enterLicenceNumber();
 		
-		Common.logstep((logStep++)+" Select 'Species'.");
+		Common.logstep("Step " + (logStep++)+" Select 'Species'.");
 		applicationIndexPage.selectSpecies();
 		
-		Common.logstep((logStep++)+" Enter number of species.");
+		Common.logstep("Step " + (logStep++)+" Enter number of species.");
 		applicationIndexPage.enterNumberofSpecies();
 		
-		Common.logstep((logStep++)+"Select Species description (Alive/Dead)");
+		Common.logstep("Step " + (logStep++)+"Select Species description (Alive/Dead)");
 		applicationIndexPage.selectspeciesDiscription();
 		
-		Common.logstep((logStep++)+" Click on 'Add Species' button");
+		Common.logstep("Step " + (logStep++)+" Click on 'Add Species' button");
 		applicationIndexPage.clickonAddSpecies();
 		
-		Common.logverification("Verify that if User has selected any wildlife possession at the time of application persisted in the Species Table");
+		Common.logOptionalAssert("Verify that if User has selected any wildlife possession at the time of application persisted in the Species Table");
 		
 		if(applicationVerificatioPage.verifySpeciesTable()) {
-			Common.assertPassed("Wildlife possession species adeed at the time of application submition are persisted correctly in Species Table.");;
+			Common.optionalAssertPassed();
 		}else {
-			Common.assertFailed("Wildlife possession species adeed at the time of application submition are not persisted in Species Table! Please take a look.");
+			Common.optionalAssertFailed();
 			Common.makeScreenshot(driver, "incorrectSpeciesTable");
 			numOfFailure++;
 		}
 		
+		/*Common.log(" Select 'No wildlife possession'..!");
+		applicationIndexPage.noWildLifePossession();
+*/
 		Common.logstep((logStep++)+" Upload file.");
-		applicationIndexPage.UploadFile();
-		
-		Common.logverification("Verify that Uploaded file persisted in 'Uploaded Documents Table.'");
+		if(applicationType.equalsIgnoreCase("Dingo Licence" ))
+		{
+			applicationIndexPage.UploadFiles();
+		}
+		else
+			applicationIndexPage.UploadFile();
+
+		Common.logOptionalAssert("Verify that Uploaded file persisted in 'Uploaded Documents Table.'");
 		
 		if(applicationVerificatioPage.verifyUploadedDocument()) {
-			Common.assertPassed("All the uploaded documents are available in 'Uploaded Documents Table.'");;
+			Common.optionalAssertPassed();
 		}else {
-			Common.assertFailed("Uploaded Documents are not persisted in 'Uploaded Documents Table! Please take a look.");
+			Common.optionalAssertFailed();
 			Common.makeScreenshot(driver, "incorrectDocumentTable");
 			numOfFailure++;
 		}
-		
-		Common.logstep((logStep++)+" Click on submit.");
+	
+		Common.logstep("Step " + (logStep++)+" Choose I Agree from Declaration By Applicant Options.");
+		applicationIndexPage.chooseIAgree();
+	
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
 		applicationIndexPage.clickonSubmit();
 		
-		Common.logstep((logStep++)+" Navigate to My Application page.");
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
 		applicationIndexPage.clickonApplication();
 	
-		Common.logverification("Verify that created application is displayed on Apllication list of 'My Application' page.");
+		Common.logMandetoryAssert("Verify that created application is displayed on Apllication list of 'My Application' page.");
 		
-		if (applicationVerificatioPage.VerifyCreatedApplicationStatus()) {
-			Common.writeProperties("Application_Created_Sucessfully","True"," ");
-			logStatus(ITestStatus.PASSED);
+		if (applicationVerificatioPage.VerifyCreatedApplicationStatus(configFileName,applicationType)) {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","True","");
+			
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+		
 		} else {
-			Common.writeProperties("Application_Created_Sucessfully","False"," ");
-
-			logStatus(ITestStatus.FAILED);
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","False"," ");
 			numOfFailure++;
 		}
 
 		if (numOfFailure > 0) {
+			Common.logStatus("Fail");			
 			Assert.assertTrue(false);
 		}
 	}
@@ -321,48 +369,1488 @@ public class CreateApplicationIndex extends SeleniumInit {
 		int numOfFailure = 0;
 		int logStep = 1;
 
-		Common.logcase("Testcase Id: TC_Portal_001 ");
-		Common.logcase("Testcase Name: To verify that user is able to submite application to OWLS portal.");
+	/*	String dataFileName="basicApplicationData";
+		String configFileName="basicApplicationConfig";
+		
+		Common.logcase("Testcase Id: TC_Portal_002 ");
+		Common.logcase("Testcase Name: The 'Payment Notice' and 'Pay Fee' links should be visible to Online Portal User. The online Portal user should be able to download The 'Payment Notice'.");
+	*/
+		Common.logcase(testName);
+		try {
+			String interview_inspection = Common.readProperties(configFileName,"Delegate_Approval_Task_Complete");
+			if (interview_inspection.contains("False")) {
+				throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+			}
+		} catch (Exception e) {
+			throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+		}
+	
+		appdata.setApplicationSubject(Common.readDataProperties(dataFileName,"ApplicationName"));
 
 		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
 		
-		Common.logstep((logStep++)+" Enter Username.");
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
 		applicationIndexPage.enterAdminUsername();
 		
-		Common.logstep((logStep++)+" Enter Password.");
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
 		applicationIndexPage.enterAdminPassword();
 		
-		Common.logstep((logStep++)+" Click on Login icon.");
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
 		applicationIndexPage.clickonlogin();
 		
-		Common.logstep((logStep++)+" Click on Personal Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
 		applicationIndexPage.clickPersonalMenu();
 		
-		Common.logstep((logStep++)+" Click on Application Menu.");
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
 		applicationIndexPage.clickonApplication();
 		
-		Common.logverification("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
 		
 		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
-			Common.assertPassed("'Payment Notice' and 'Pay Fee' links are available.");;
+			Common.optionalAssertPassed();
 		}else {
-			Common.assertFailed("Something went wrong! Please take a look.");
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "missingPaymentNotice.png");
+			numOfFailure++;
+		}
+		
+		Common.writeDataProperties(configFileName, "Payment_Notice_Verified","True","");
+		Common.logStatus("Pass");
+
+		
+	Common.logstep("Step " +(logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
+		applicationIndexPage.clickonPaymentNotice(configFileName);
+		Common.pause(5);
+		
+		try
+	     {
+			// final URL scalaByExampleUrl = new URL(address);
+			File file = new File("Resource\\Downloads");
+			System.out.println("File Path: " + file.getAbsolutePath() + "\\*.pdf");
+			File paymentNotice = Common.getTheNewestFile(file.getAbsolutePath(), "pdf");
+			System.err.println(" Newes File : "+paymentNotice.getName().toString());
+			final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+			final PDFTextStripper stripper = new PDFTextStripper();
+	     
+	        final String pdfText = stripper.getText(documentToBeParsed);
+	        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	        System.out.println(pdfText);
+	        
+	        Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+			if(applicationVerificatioPage.verifyAddressFromPDF(dataFileName,pdfText)) {
+				Common.optionalAssertPassed();
+				Common.writeDataProperties(configFileName, "Payment_Notice_Verified","True","");
+				Common.logStatus("Pass");
+				paymentNotice.delete();
+			}else {
+				Common.optionalAssertFailed();
+				numOfFailure++;
+				paymentNotice.delete();
+			}
+	     }
+	     catch (IOException ioEx)
+	     {
+	      System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	     }
+		
+		if(numOfFailure > 0)
+		{
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}			
+	}
+	
+/*	@Test // pass
+	public void verifyCreateSpecimenApplication() {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="specimenApplicationData";
+		String configFileName="specimenApplicationConfig";
+		
+		Common.logcase("Testcase Id: TC_Portal_003");
+		Common.logcase("Testcase Name: To verify Online user submits a specimen application with conditions to trigger the 'Review Application'  task.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
+		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
+		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(dataFileName);		
+	
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Specimen Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(dataFileName)) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		applicationIndexPage.checkboxSameasAbove();
+		
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
+		if(applicationVerificatioPage.verifyPostalAddress()) {
+			Common.optionalAssertPassed();
+		}else {
+			
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'I have prior convictions' radio button and enter offence details as below.");
+		applicationIndexPage.ClickonIHavepriorConviction();
+		  
+		  String offence = Common.generateRandomChars(10);
+		  appdata.setOffenceName(offence);
+		  String offenceYear = String.valueOf(Common.randBetween(2000, 2016));
+		  appdata.setOffenceYear(offenceYear);
+		  String offenceState="VIC";
+		  appdata.setOffencestate(offenceState);
+		  
+		  Common.log("Offence: "+offence);
+		  Common.log("Offence Year: "+offenceYear);
+		  Common.log("Offence State: "+offenceState);
+		  
+		  applicationIndexPage.EnterOffenceDetails(offence,offenceYear,offenceState);
+		  
+		  applicationIndexPage.clickonAddpriorConvictionsButton();
+		  
+		  Common.logOptionalAssert("Verify that Conviction data should be displayed below conviction form.");
+		  if (applicationVerificatioPage.VerifyAddedConvictiondata(offence,offenceYear,offenceState)) {
+		   Common.optionalAssertPassed();
+		  } else {
+			  Common.optionalAssertFailed();
+		   numOfFailure++;
+		  }
+		
+		Common.logstep("Step " + (logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
+		applicationIndexPage.HaveanyWildInPossession();
+		
+		Common.logstep("Step " + (logStep++)+" Enter 'Licence Number'.");
+		applicationIndexPage.enterLicenceNumber();
+		
+		Common.logstep("Step " + (logStep++)+" Select 'Species'.");
+		applicationIndexPage.selectSpecies();
+		
+		Common.logstep("Step " + (logStep++)+" Enter number of species.");
+		applicationIndexPage.enterNumberofSpecies();
+		
+		Common.logstep("Step " + (logStep++)+"Select Species description (Alive/Dead)");
+		applicationIndexPage.selectspeciesDiscription();
+		
+		Common.logstep("Step " + (logStep++)+" Click on 'Add Species' button");
+		applicationIndexPage.clickonAddSpecies();
+		
+		Common.logOptionalAssert("Verify that if User has selected any wildlife possession at the time of application persisted in the Species Table");
+		
+		if(applicationVerificatioPage.verifySpeciesTable()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "incorrectSpeciesTable");
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Upload file.");
+		applicationIndexPage.UploadFile();
+		
+		Common.logOptionalAssert("Verify that Uploaded file persisted in 'Uploaded Documents Table.'");
+		
+		if(applicationVerificatioPage.verifyUploadedDocument()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "incorrectDocumentTable");
+			numOfFailure++;
+		}
+		
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
+		applicationIndexPage.clickonSubmit();
+		
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
+		applicationIndexPage.clickonApplication();
+	
+		Common.logMandetoryAssert("Verify that created application is displayed on Apllication list of 'My Application' page.");
+		
+		if (applicationVerificatioPage.VerifyCreatedApplicationStatus(dataFileName,"Wildlife Specimen Licence")) {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","True","");
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+		
+		} else {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","False"," ");
+			numOfFailure++;
+		}
+
+		if (numOfFailure > 0) {
+			Assert.assertTrue(false);
+			Common.logStatus("Fail");			
+		}
+	}
+	
+	@Test // pass
+	public void verifySpecimenAppPaymentNoticeAndAwaitingTask() throws IOException {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="specimenApplicationData";
+		String configFileName="specimenApplicationConfig";
+	
+		Common.logcase("Testcase Id: TC_Portal_004");
+		Common.logcase("Testcase Name: The 'Payment Notice' and 'Pay Fee' links should be visible to Online Portal User. The online Portal user should be able to download The 'Payment Notice'.");
+
+		try {
+			String interview_inspection = Common.readProperties(configFileName,"Delegate_Approval_Task_Complete");
+			if (interview_inspection.contains("False")) {
+				throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+			}
+		} catch (Exception e) {
+			throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+		}
+		appdata.setApplicationSubject(Common.readDataProperties(dataFileName,"ApplicationName"));
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		
+		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
 			Common.makeScreenshot(driver, "missingPaymentNotice.png");
 			numOfFailure++;
 		}
 		
 		Common.logstep((logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
-		applicationIndexPage.clickonPaymentNotice();
+		applicationIndexPage.clickonPaymentNotice(dataFileName);
+		Common.pause(5);
 		
-		String pdfURL="file:///G:/KiwiQA%20Automation%20Projects/OWLS_Automation/Resource/Downloads/OWLS%20Payment%20Notice%20(Application)Template.pdf";
+		try
+	     {
+	        //final URL scalaByExampleUrl = new URL(address);
+			File paymentNotice=new File("Resource/Downloads/OWLS Payment Notice (Application)Template.pdf");
+	        final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+	        final PDFTextStripper stripper = new PDFTextStripper();
+	     
+	        final String pdfText = stripper.getText(documentToBeParsed);
+	        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	        System.out.println(pdfText);
+	        
+	        Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+			if(applicationVerificatioPage.verifyAddressFromPDF(dataFileName,pdfText)) {
+				Common.optionalAssertPassed();
+				Common.logStatus("Pass");
+				paymentNotice.delete();
+			}else {
+				Common.optionalAssertFailed();
+				numOfFailure++;
+				paymentNotice.delete();
+			}
+	     }
+	     catch (IOException ioEx)
+	     {
+	      System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	     }
 		
-		Common.switchToNewtabWithUrl(driver, pdfURL);
-		URL url=new URL	(driver.getCurrentUrl());
+		if(numOfFailure >0)
+		{
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}
+	}
+	*/
+	
+	@Parameters({ "Create" })
+	@Test // pass
+	public void createApplicationWithoutError(String Create) {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+	/*	String dataFileName="basicApplicationNoValidationData";
+		String configFileName="basicApplicationConfig";
 		
-		BufferedInputStream fileToParse=new BufferedInputStream (url.openStream());
-/*		PDFReader reader = new PDFReader(new File("my.pdf"));
+		Common.logcase("Testcase Id: TC_Portal_005");
+		Common.logcase("Testcase Name: To verify Online user submits a basic application with no conditions to trigger the 'Await payment confirmation'  task.");
 */
+		
+		
+		Common.logcase(Create);
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
+		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
+		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(configFileName);		
+	
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType(applicationType);
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(configFileName)) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		applicationIndexPage.checkboxSameasAbove();
+		
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
+		if(applicationVerificatioPage.verifyPostalAddress()) {
+			Common.optionalAssertPassed();
+		}else {
+			
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep("Step " + (logStep++)+" Choose Prefered Licence Expiry.");
+		applicationIndexPage.licenceExpiry(applicationType);
+	
+	/*	Common.log("Click on 'No Conviction' Option");
+		applicationIndexPage.selectNoConviction();
+		
+		Common.log(" Select 'No wildlife possession'..!");
+		applicationIndexPage.noWildLifePossession();
+
+		Common.log("Click on 'No Conviction' Option");
+		applicationIndexPage.selectNoConviction();
+	*/	
+		Common.logstep("Step " + (logStep++)+" Choose I Agree from Declaration By Applicant Options.");
+		applicationIndexPage.chooseIAgree();
+		
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
+		applicationIndexPage.clickonSubmit();
+
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logMandetoryAssert("Verify Application created without any error condition in 'Payment Pending' status.");
+		
+		if(applicationVerificatioPage.verifyCreatedApplicationStatus(configFileName,applicationType)) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "applicationNotCreated.png");
+			numOfFailure++;
+		}
+		
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		
+		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "missingPaymentNotice.png");
+			numOfFailure++;
+		}
+		
+	    Common.writeDataProperties(configFileName, "Payment_Notice_Verified","True","");
+	    Common.logStatus("Pass");
+
+		/*
+		Common.logstep("Step "+(logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
+		applicationIndexPage.clickonPaymentNotice(configFileName);
+		Common.pause(5);
+		
+		try
+	      {
+	         //final URL scalaByExampleUrl = new URL(address);
+	   //File paymentNotice=new File("Resource/Downloads/OWLS Payment Notice (Application)Template.pdf");
+	   File file = new File("Resource\\Downloads");
+	   System.out.println("File Path: "+file.getAbsolutePath()+"\\*.pdf");
+	   File paymentNotice = Common.getTheNewestFile(file.getAbsolutePath(), "pdf");
+	   
+	   final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+	         final PDFTextStripper stripper = new PDFTextStripper();
+	      
+	         final String pdfText = stripper.getText(documentToBeParsed);
+	         System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	         System.out.println(pdfText);
+	         
+	         Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+	   if(applicationVerificatioPage.verifyAddressFromPDF(configFileName,pdfText)) {
+	    Common.optionalAssertPassed();
+	    Common.writeDataProperties(configFileName, "Payment_Notice_Verified","True","");
+	    Common.logStatus("Pass");
+	    paymentNotice.delete();
+	   }else {
+	    Common.optionalAssertFailed();
+	    numOfFailure++;
+	   }
+	      }
+	      catch (IOException ioEx)
+	      {
+	       System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	      }*/
+		
+		if(numOfFailure > 0)
+		{
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}
+
 	}
 	
+	@Parameters ({ "Warning" })
+	@Test // pass
+	public void verifyWarningMessage(String logcase) {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+		
+
+		Common.logcase(logcase);
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Advanced Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logMandetoryAssert(" Verify that 'Warning' pop-up is displayed.");
+		if(applicationVerificatioPage.verifyWarningPopup()) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logMandetoryAssert(" Verify Warning Message content .. !");
+		if(applicationVerificatioPage.verifyWarningMessage()) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		} 
+		
+		Common.logMandetoryAssert(" Verify 'OK' and 'Cancel' buttons available in Warning pop-up!");
+		if(applicationVerificatioPage.verifyButtons()) {
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		} 
+		
+		if (numOfFailure > 0) {
+			Common.logStatus("Fail");			
+			Assert.assertTrue(false);
+		}
+	}
+	
+	@Test // pass
+	public void verifyAdvancedApplicationWarning() {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+	
+		Common.logcase("Testcase Id: TC_Portal_011 ");
+		Common.logcase("Testcase Name: To verify Online User won't allow to apply for Advaced License when Basic License Permit Already exist.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Advanced Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logMandetoryAssert(" Verify that validation error message.");
+		if(applicationVerificatioPage.verifyValidationError()) {
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		if (numOfFailure > 0) {
+			Common.logStatus("Fail");			
+			Assert.assertTrue(false);
+		}
+	}
+	
+	
+	@Test // pass
+	public void verifyBasicApplicationWarning() {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		Common.logcase("Testcase Id: TC_Portal_011 ");
+		Common.logcase("Testcase Name: To verify Online User won't allow to apply for Basic License when Advanced License Application Already In Progress.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Basic Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logMandetoryAssert(" Verify that validation error message.");
+		if(applicationVerificatioPage.verifyValidationError()) {
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		if (numOfFailure > 0) {
+			Common.logStatus("Fail");			
+			Assert.assertTrue(false);
+		}
+	}
+
+
+	
+	/*
+	@Test // pass
+	public void createSpecimenApplicationWithoutError() {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="specimenApplicationNoValidationData";
+		
+		Common.logcase("Testcase Id: TC_Portal_006");
+		Common.logcase("Testcase Name: To verify Online user submits a specimen application with no conditions to trigger the 'Await Payment Confirmation'  task.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
+		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
+		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(dataFileName);		
+	
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Specimen Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(dataFileName)) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		applicationIndexPage.checkboxSameasAbove();
+		
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
+		if(applicationVerificatioPage.verifyPostalAddress()) {
+			Common.optionalAssertPassed();
+		}else {
+			
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
+		applicationIndexPage.clickonSubmit();
+
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logMandetoryAssert("Verify Application created without any error condition in 'Payment Pending' status.");
+		
+		if(applicationVerificatioPage.verifyCreatedApplicationStatus(dataFileName,"Wildlife Specimen Licence")) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "applicationNotCreated.png");
+			numOfFailure++;
+		}
+		
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		
+		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "missingPaymentNotice.png");
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
+		applicationIndexPage.clickonPaymentNotice(dataFileName);
+		Common.pause(5);
+		
+		try
+	     {
+	        //final URL scalaByExampleUrl = new URL(address);
+			File paymentNotice=new File("Resource/Downloads/OWLS Payment Notice (Application)Template.pdf");
+	        final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+	        final PDFTextStripper stripper = new PDFTextStripper();
+	     
+	        final String pdfText = stripper.getText(documentToBeParsed);
+	        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	        System.out.println(pdfText);
+	        
+	        Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+			if(applicationVerificatioPage.verifyAddressFromPDF(dataFileName,pdfText)) {
+				Common.optionalAssertPassed();
+				Common.writeDataProperties(dataFileName, "Payment_Notice_Verified","True","");
+				Common.logStatus("Pass");
+				paymentNotice.delete();
+			}
+			else
+			{
+				Common.optionalAssertFailed();
+				numOfFailure++;
+				paymentNotice.delete();
+			}
+	     }
+	     catch (IOException ioEx)
+	     {
+	      System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	     }
+		
+		if(numOfFailure > 0)
+		{
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}
+
+	}
+	
+	@Test // pass
+	public void createAdvancedApplicationWithoutError() {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="advancedApplicationNoValidationData";
+		
+		Common.logcase("Testcase Id: TC_Portal_007");
+		Common.logcase("Testcase Name: To verify Online user submits a advance application with no conditions to trigger the 'Await Payment Confirmation'  task.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
+		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
+		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(dataFileName);		
+	
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Advanced Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(dataFileName)) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		applicationIndexPage.checkboxSameasAbove();
+		
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
+		if(applicationVerificatioPage.verifyPostalAddress()) {
+			Common.optionalAssertPassed();
+		}else {
+			
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
+		applicationIndexPage.clickonSubmit();
+
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logMandetoryAssert("Verify Application created without any error condition in 'Payment Pending' status.");
+		
+		if(applicationVerificatioPage.verifyCreatedApplicationStatus(dataFileName,"Wildlife Advanced Licence")) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "applicationNotCreated.png");
+			numOfFailure++;
+		}
+		
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		
+		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "missingPaymentNotice.png");
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
+		applicationIndexPage.clickonPaymentNotice(dataFileName);
+		Common.pause(5);
+		
+		try
+	     {
+	        //final URL scalaByExampleUrl = new URL(address);
+			File paymentNotice=new File("Resource/Downloads/OWLS Payment Notice (Application)Template.pdf");
+	        final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+	        final PDFTextStripper stripper = new PDFTextStripper();
+	     
+	        final String pdfText = stripper.getText(documentToBeParsed);
+	        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	        System.out.println(pdfText);
+	        
+	        Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+			if(applicationVerificatioPage.verifyAddressFromPDF(dataFileName,pdfText)) {
+				Common.optionalAssertPassed();
+				Common.writeDataProperties(dataFileName, "Payment_Notice_Verified","True","");
+				Common.logStatus("Pass");
+				paymentNotice.delete();
+			}else {
+				Common.optionalAssertFailed();
+				numOfFailure++;
+				paymentNotice.delete();
+			}
+	     }
+	     catch (IOException ioEx)
+	     {
+	      System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	     }
+		
+		if(numOfFailure > 0)
+		{
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}
+
+	}
+
+	@Test // pass
+	public void verifyCreateAdvancedApplication() {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="advancedApplicationData";
+		String configFileName="basicApplicationConfig";
+		
+		Common.logcase("Testcase Id: TC_Portal_008");
+		Common.logcase("Testcase Name: To verify Online user submits an advanced application with conditions to trigger the 'Review Application'  task.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
+		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
+		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(dataFileName);		
+	
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Wildlife Advanced Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(dataFileName)) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		applicationIndexPage.checkboxSameasAbove();
+		
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
+		if(applicationVerificatioPage.verifyPostalAddress()) {
+			Common.optionalAssertPassed();
+		}else {
+			
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'I have prior convictions' radio button and enter offence details as below.");
+		applicationIndexPage.ClickonIHavepriorConviction();
+		  
+		  String offence = Common.generateRandomChars(10);
+		  appdata.setOffenceName(offence);
+		  String offenceYear = String.valueOf(Common.randBetween(2000, 2016));
+		  appdata.setOffenceYear(offenceYear);
+		  String offenceState="VIC";
+		  appdata.setOffencestate(offenceState);
+		  
+		  Common.log("Offence: "+offence);
+		  Common.log("Offence Year: "+offenceYear);
+		  Common.log("Offence State: "+offenceState);
+		  
+		  applicationIndexPage.EnterOffenceDetails(offence,offenceYear,offenceState);
+		  
+		  applicationIndexPage.clickonAddpriorConvictionsButton();
+		  
+		  Common.logOptionalAssert("Verify that Conviction data should be displayed below conviction form.");
+		  if (applicationVerificatioPage.VerifyAddedConvictiondata(offence,offenceYear,offenceState)) {
+		   Common.optionalAssertPassed();
+		  } else {
+			  Common.optionalAssertFailed();
+		   numOfFailure++;
+		  }
+		
+		  Common.log("Click on 'No Conviction' Option");
+		  applicationIndexPage.selectNoConviction();
+		  
+		Common.logstep("Step " + (logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
+		applicationIndexPage.HaveanyWildInPossession();
+		
+		Common.logstep("Step " + (logStep++)+" Enter 'Licence Number'.");
+		applicationIndexPage.enterLicenceNumber();
+		
+		Common.logstep("Step " + (logStep++)+" Select 'Species'.");
+		applicationIndexPage.selectSpecies();
+		
+		Common.logstep("Step " + (logStep++)+" Enter number of species.");
+		applicationIndexPage.enterNumberofSpecies();
+		
+		Common.logstep("Step " + (logStep++)+"Select Species description (Alive/Dead)");
+		applicationIndexPage.selectspeciesDiscription();
+		
+		Common.logstep("Step " + (logStep++)+" Click on 'Add Species' button");
+		applicationIndexPage.clickonAddSpecies();
+		
+		Common.logOptionalAssert("Verify that if User has selected any wildlife possession at the time of application persisted in the Species Table");
+		
+		if(applicationVerificatioPage.verifySpeciesTable()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "incorrectSpeciesTable");
+			numOfFailure++;
+		}
+		
+		Common.log(" Select 'No wildlife possession'..!");
+		applicationIndexPage.noWildLifePossession();
+		
+		Common.logstep((logStep++)+" Upload file.");
+		applicationIndexPage.UploadFile();
+		
+		Common.logOptionalAssert("Verify that Uploaded file persisted in 'Uploaded Documents Table.'");
+		
+		if(applicationVerificatioPage.verifyUploadedDocument()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "incorrectDocumentTable");
+			numOfFailure++;
+		}
+		
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
+		applicationIndexPage.clickonSubmit();
+		
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
+		applicationIndexPage.clickonApplication();
+	
+		Common.logMandetoryAssert("Verify that created application is displayed on Apllication list of 'My Application' page.");
+		
+		if (applicationVerificatioPage.VerifyCreatedApplicationStatus(dataFileName,"Wildlife Advanced Licence")) {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","True","");
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+		
+		} else {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","False"," ");
+			numOfFailure++;
+		}
+
+		if (numOfFailure > 0) {
+			Assert.assertTrue(false);
+			Common.logStatus("Fail");			
+		}
+	}
+
+	@Test // pass
+	public void verifyAdvancedAppPaymentNoticeAndAwaitingTask() throws IOException {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="advancedApplicationData";
+		String configFileName="advancedApplicationConfig";
+	
+		Common.logcase("Testcase Id: TC_Portal_008");
+		Common.logcase("Testcase Name: The 'Payment Notice' and 'Pay Fee' links should be visible to Online Portal User. The online Portal user should be able to download The 'Payment Notice'.");
+
+		try {
+			String interview_inspection = Common.readProperties(configFileName,"Delegate_Approval_Task_Complete");
+			if (interview_inspection.contains("False")) {
+				throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+			}
+		} catch (Exception e) {
+			throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+		}
+		appdata.setApplicationSubject(Common.readDataProperties(dataFileName,"ApplicationName"));
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		
+		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "missingPaymentNotice.png");
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
+		applicationIndexPage.clickonPaymentNotice(dataFileName);
+		Common.pause(5);
+		
+		try
+	     {
+	        //final URL scalaByExampleUrl = new URL(address);
+			File paymentNotice=new File("Resource/Downloads/OWLS Payment Notice (Application)Template.pdf");
+	        final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+	        final PDFTextStripper stripper = new PDFTextStripper();
+	     
+	        final String pdfText = stripper.getText(documentToBeParsed);
+	        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	        System.out.println(pdfText);
+	        
+	        Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+			if(applicationVerificatioPage.verifyAddressFromPDF(dataFileName,pdfText)) {
+				Common.optionalAssertPassed();
+				Common.logStatus("Pass");
+				paymentNotice.delete();
+			}else {
+				Common.optionalAssertFailed();
+				numOfFailure++;
+				paymentNotice.delete();
+			}
+	     }
+	     catch (IOException ioEx)
+	     {
+	      System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	     }
+		
+		if(numOfFailure >0)
+		{
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}
+	}
+	
+
+	
+		@Test // pass
+	public void verifyCreateDingoApplication (){
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="dingoApplicationData";
+		String configFileName="dingoApplicationConfig";
+		
+		Common.logcase("Testcase Id: TC_Portal_013 ");
+		Common.logcase("Testcase Name: To verify that user is able to submit Dingo License application to OWLS portal.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Details Menu.");
+		applicationVerificatioPage=applicationIndexPage.clickonDetails();		
+		
+		Common.logstep("Step " + (logStep++)+" Click on Contact Details Option.");
+		applicationVerificatioPage=applicationIndexPage.clickonContactDetail(dataFileName);		
+	
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Create Application button.");
+		applicationIndexPage.clickonCreateApplication();
+		
+		Common.logstep("Step " + (logStep++)+" Select Application type from Drop down.");
+		applicationIndexPage.SelectApplicationType("Dingo Licence");
+	
+		Common.logstep("Step " + (logStep++)+" Click on Next button");
+		applicationIndexPage.clickonNext();
+		
+		Common.logOptionalAssert("Verify Operating Address retrived correctly from User's Contact Details->Primary Address.");
+		if(applicationVerificatioPage.verifyOperatingAddress(dataFileName)) {
+			Common.optionalAssertPassed();;
+		}else {
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'Same as above' checkbox'.");
+		applicationIndexPage.checkboxSameasAbove();
+		
+		Common.logOptionalAssert("Verify Postal Address pasted correctly as same as Specified Premises.");
+		if(applicationVerificatioPage.verifyPostalAddress()) {
+			Common.optionalAssertPassed();
+		}else {
+			
+			Common.optionalAssertFailed();
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Select 'I have prior convictions' radio button and enter offence details as below.");
+		applicationIndexPage.ClickonIHavepriorConviction();
+		  
+		  String offence = Common.generateRandomChars(10);
+		  appdata.setOffenceName(offence);
+		  String offenceYear = String.valueOf(Common.randBetween(2000, 2016));
+		  appdata.setOffenceYear(offenceYear);
+		  String offenceState="VIC";
+		  appdata.setOffencestate(offenceState);
+		  
+		  Common.log("Offence: "+offence);
+		  Common.log("Offence Year: "+offenceYear);
+		  Common.log("Offence State: "+offenceState);
+		  
+		  applicationIndexPage.EnterOffenceDetails(offence,offenceYear,offenceState);
+		  
+		  applicationIndexPage.clickonAddpriorConvictionsButton();
+		  
+		  Common.logOptionalAssert("Verify that Conviction data should be displayed below conviction form.");
+		  if (applicationVerificatioPage.VerifyAddedConvictiondata(offence,offenceYear,offenceState)) {
+		   Common.optionalAssertPassed();
+		  } else {
+			  Common.optionalAssertFailed();
+		   numOfFailure++;
+		  }
+		
+		Common.log("Click on 'No Conviction' Option");
+		applicationIndexPage.selectNoConviction();
+		  
+		Common.logstep("Step " + (logStep++)+" Select 'Do you have any wildlife in your possession at the time of this application?' to YES.");
+		applicationIndexPage.HaveanyWildInPossession();
+		
+		Common.logstep("Step " + (logStep++)+" Enter 'Licence Number'.");
+		applicationIndexPage.enterLicenceNumber();
+		
+		Common.logstep("Step " + (logStep++)+" Select 'Species'.");
+		applicationIndexPage.selectDingo();
+		
+		Common.logstep("Step " + (logStep++)+" Enter number of species.");
+		applicationIndexPage.enterNumberofSpecies();
+		
+		Common.logstep("Step " + (logStep++)+"Select Species description (Alive/Dead)");
+		applicationIndexPage.selectspeciesDiscription();
+		
+		Common.logstep("Step " + (logStep++)+" Click on 'Add Species' button");
+		applicationIndexPage.clickonAddSpecies();
+		
+		Common.logOptionalAssert("Verify that if User has selected any wildlife possession at the time of application persisted in the Species Table");
+		
+		if(applicationVerificatioPage.verifySpeciesTable()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "incorrectSpeciesTable");
+			numOfFailure++;
+		}
+		
+		Common.log(" Select 'No wildlife possession'..!");
+		applicationIndexPage.noWildLifePossession();
+		
+		Common.logstep((logStep++)+" Upload file.");
+		applicationIndexPage.UploadFiles();
+		
+		Common.logOptionalAssert("Verify that Uploaded file persisted in 'Uploaded Documents Table.'");
+		
+		if(applicationVerificatioPage.verifyUploadedDocument()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "incorrectDocumentTable");
+			numOfFailure++;
+		}
+		
+		Common.logstep("Step " + (logStep++)+" Click on submit.");
+		applicationIndexPage.clickonSubmit();
+		
+		Common.logstep("Step " + (logStep++)+" Navigate to My Application page.");
+		applicationIndexPage.clickonApplication();
+	
+		Common.logMandetoryAssert("Verify that created application is displayed on Apllication list of 'My Application' page.");
+		
+		if (applicationVerificatioPage.VerifyCreatedApplicationStatus(dataFileName,"Dingo Licence")) {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","True","");
+			Common.optionalAssertPassed();
+			Common.logStatus("Pass");
+		
+		} else {
+			Common.writeProperties(configFileName,"Application_Created_Sucessfully","False"," ");
+			numOfFailure++;
+		}
+
+		if (numOfFailure > 0) {
+			Common.logStatus("Fail");			
+			Assert.assertTrue(false);
+		}
+	}
+	
+	@Test // pass
+	public void verifyDingoAppPaymentNoticeAndAwaitingTask() throws IOException {
+
+		int numOfFailure = 0;
+		int logStep = 1;
+
+		String dataFileName="dingoApplicationData";
+		String configFileName="dingoApplicationConfig";
+	
+		Common.logcase("Testcase Id: TC_Portal_014");
+		Common.logcase("Testcase Name: The 'Payment Notice' and 'Pay Fee' links should be visible to Online Portal User. The online Portal user should be able to download The 'Payment Notice'.");
+
+		try {
+			String interview_inspection = Common.readProperties(configFileName,"Delegate_Approval_Task_Complete");
+			if (interview_inspection.contains("False")) {
+				throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+			}
+		} catch (Exception e) {
+			throw new SkipException("Skipping Test case as 'Payment Notice' and 'Pay Fee' options are not available or Payment Notice has not yet been generated.");
+		}
+		appdata.setApplicationSubject(Common.readDataProperties(dataFileName,"ApplicationName"));
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		Common.logMandetoryAssert("Verify that 'Payment Notice' and 'Pay Fee' Links are available for Payment Pending Application.");
+		
+		if(applicationVerificatioPage.verifyPaymentPendingApplication()) {
+			Common.optionalAssertPassed();
+		}else {
+			Common.optionalAssertFailed();
+			Common.makeScreenshot(driver, "missingPaymentNotice.png");
+			numOfFailure++;
+		}
+		
+		Common.logstep((logStep++)+" Click on Payment Notice link to download Payment Notice PDF.");
+		applicationIndexPage.clickonPaymentNotice(dataFileName);
+		Common.pause(5);
+		
+		try
+	     {
+	        //final URL scalaByExampleUrl = new URL(address);
+			File paymentNotice=new File("Resource/Downloads/OWLS Payment Notice (Application)Template.pdf");
+	        final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+	        final PDFTextStripper stripper = new PDFTextStripper();
+	     
+	        final String pdfText = stripper.getText(documentToBeParsed);
+	        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+	        System.out.println(pdfText);
+	        
+	        Common.logMandetoryAssert("Verify that User's Postal address is available in Payment Notice PDF.");
+			if(applicationVerificatioPage.verifyAddressFromPDF(dataFileName,pdfText)) {
+				Common.optionalAssertPassed();
+				Common.logStatus("Pass");
+				paymentNotice.delete();
+			}else {
+				Common.optionalAssertFailed();
+				numOfFailure++;
+				paymentNotice.delete();
+			}
+	     }
+	     catch (IOException ioEx)
+	     {
+	      System.err.println("Exception while trying to parse text from PDF at "+ ioEx.getMessage());
+	     }
+		
+		if(numOfFailure >0)
+		{
+			
+			Common.logStatus("Fail");
+			Assert.assertTrue(false);
+		}
+	}
+	*/
+	
+	@Test
+	public void fileDownload() throws InvalidPasswordException, IOException
+	{
+		int numOfFailure = 0;
+		int logStep = 1;
+	
+		Common.logcase("Testcase Id: TC_Portal_011 ");
+		Common.logcase("Testcase Name: To verify Online User won't allow to apply for Advaced License when Basic License Permit Already exist.");
+
+		Common.logstep("Step " + (logStep++) + " : Open url:<a>" + testUrl + "</a>");
+		
+		Common.logstep("Step " + (logStep++)+" Enter Username.");
+		applicationIndexPage.enterAdminUsername();
+		
+		Common.logstep("Step " + (logStep++)+" Enter Password.");
+		applicationIndexPage.enterAdminPassword();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Login icon.");
+		applicationIndexPage.clickonlogin();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Personal Menu.");
+		applicationIndexPage.clickPersonalMenu();
+		
+		Common.logstep("Step " + (logStep++)+" Click on Application Menu.");
+		applicationIndexPage.clickonApplication();
+		
+		/*Common.pause(3);
+		driver.findElement(By.xpath("//a[@href='/h/personal/owls_LPA/list']//span")).click();*/
+		
+		Common.pause(3);
+		driver.findElement(By.xpath("//a[text()='Payment Notice']")).click();
+		
+		String sessionId = driver.getSessionId().toString();
+		
+		FileExtensionClient fileExtensionClient = new FileExtensionClient("172.16.150.12", 4444, sessionId);
+		File fileFromNode = fileExtensionClient.download("C:/Users/Typical-User/Downloads/Selenium_file_Download/TestUpload.pdf");
+		
+		
+		
+		BufferedReader br = new  BufferedReader(new FileReader(fileFromNode));
+		
+		String temp = br.readLine();
+		
+		while (temp!=null) {
+			System.err.println(temp);
+			temp=br.readLine();
+		}
+		
+		Common.pause(3);
+		
+		/*File file = new File("C:\\Users\\Typical-User\\Downloads\\Selenium_file_Download");
+		System.out.println("File Path: " + file.getAbsolutePath() + "\\*.pdf");
+		File paymentNotice = Common.getTheNewestFile(file.getAbsolutePath(), "pdf");
+		System.err.println(" Newes File : "+paymentNotice.getName().toString());
+		final PDDocument documentToBeParsed = PDDocument.load(paymentNotice);
+		final PDFTextStripper stripper = new PDFTextStripper();
+     
+        final String pdfText = stripper.getText(documentToBeParsed);
+        System.out.println("Parsed text size is " + pdfText.length() + " characters:");
+        System.out.println(pdfText);*/
+		
+	}
 }
 	

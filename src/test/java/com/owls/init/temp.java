@@ -1,12 +1,13 @@
 package com.owls.init;
 
-
-
-
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class temp {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 		// TODO Auto-generated method stub
 		//24 Aug 2016 18:56
 		/*Date date1  =  new Date();
@@ -40,5 +41,19 @@ public class temp {
 	System.out.println(dateStringList);*/
 		String candidate = "Candidate Four (c4)";
 		System.out.println(candidate.replaceAll("(.*)\\(", "").replaceAll("\\)", ""));//.replaceAll("\\w+ \\w+\\)", "").trim());
+		
+		/* SimpleDateFormat format1 = new SimpleDateFormat("dd/mm/yyyy");
+		    SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yy");
+		    Date date = format1.parse("09/04/2017");
+		    System.out.println(format2.format(date));*/
+		    
+		    Format formatter = new SimpleDateFormat("dd-MMM-yy");
+		  //  String s = formatter.format("09/11/2017");
+		 //   System.out.println(s);
+		    
+		    SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy");
+		    SimpleDateFormat format2 = new SimpleDateFormat("dd-MMM-yy");
+		    Date date = format1.parse("05-12-1999");
+		    System.out.println(format2.format(date));
 	}
 }

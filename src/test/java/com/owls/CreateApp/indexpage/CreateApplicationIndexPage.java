@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Select;
 
 import com.owls.CreateApp.verification.CreateApplicationVerificationPage;
 import com.owls.init.AbstractPage;
@@ -25,7 +28,7 @@ import com.owls.utility.WildlifePossession;
 
 public class CreateApplicationIndexPage extends AbstractPage {
 
-	public CreateApplicationIndexPage(WebDriver driver) {
+	public CreateApplicationIndexPage(RemoteWebDriver driver) {
 		super(driver);
 		// TODO Auto-generated constructor stub
 	}
@@ -90,7 +93,7 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	public CreateApplicationVerificationPage clickonApplication()
 	{
 		Common.clickOn(driver, btnApplication);
-		
+		Common.pause(5);
 		return new CreateApplicationVerificationPage(driver);
 	}
 	
@@ -114,9 +117,9 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	{
 		Common.waitForElement(driver, combo_selectApplicationType);
 		Common.pause(2);
-		
+		Select select=new Select(combo_selectApplicationType);
 		Common.selectFromComboByVisibleText(combo_selectApplicationType, ApplicationType);
-		
+		Common.log(" Selected Application Type :"+select.getFirstSelectedOption().getText());
 		return new CreateApplicationVerificationPage(driver);
 	}
 	
@@ -126,7 +129,7 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	
 	public CreateApplicationVerificationPage clickonNext()
 	{
-		Common.pause(2);
+		Common.pause(4);
 		
 		Common.clickOn(driver, btn_next);
 		
@@ -161,12 +164,30 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	public static String fileName="TestUpload.pdf";
 	
 	public CreateApplicationVerificationPage UploadFile()
-	{		
+	{	
+		System.err.println( " Back from Upload Files ... ");
 		File uploadDocument = new File("Resource\\"+fileName);
 		Common.type(uploadFile, uploadDocument.getAbsolutePath());
 		
 		return new CreateApplicationVerificationPage(driver);
 	}
+	
+	@FindBy (xpath=".//label[text()='No file selected.']/../..//input")
+	WebElement uploadFiles;
+	
+	public CreateApplicationVerificationPage UploadFiles()
+	{		
+		File uploadDocument = new File("Resource\\"+fileName);
+			WebElement upload = driver.findElement(By.xpath(".//input[@name='document_file[]']"));
+			System.err.println(" Dingo file will upload ... ");
+			  JavascriptExecutor je = (JavascriptExecutor)driver;
+			  String js = "arguments[0].style.visibility='visible';";
+			  je.executeScript(js,upload);
+			  upload.sendKeys(uploadDocument.getAbsolutePath());
+	
+		return new CreateApplicationVerificationPage(driver);
+	}
+	
 	
 	@FindBy(xpath="//*[@id='edit-form-submit-bottom']")
 	WebElement submitApplication;
@@ -180,8 +201,7 @@ public class CreateApplicationIndexPage extends AbstractPage {
 		Common.pause(1);
 		
 		Common.jsClick(driver, submitApplication);
-	
-		
+
 		Common.waitForElement(driver, AppdetailTitle);
 		Common.pause(2);
 		
@@ -218,9 +238,33 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	{
 		Common.clickOn(driver, select_species);
 		Common.pause(2);
+		List<WebElement> species = driver.findElements(By.xpath("//ul[@class='select2-results']/li/div"));
+		int rannumber ;
+		try {
+			rannumber = Common.randBetween(1, 20);
+			Common.pause(2);
+			species.get(rannumber).click();
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			System.err.println(" This is selecting dingo specimen .. !! ");
+			rannumber = Common.randBetween(1, 1);
+			Common.pause(2);	
+			species.get(rannumber).click();
+		}
+			WildlifePossession.setSpecies(speciesSelected.getText());
+		System.err.println("Selected Species"+WildlifePossession.getSpecies());
+		
+		return new CreateApplicationVerificationPage(driver);
+	}
+	
+	public CreateApplicationVerificationPage selectDingo()
+	{
+		Common.clickOn(driver, select_species);
+		Common.pause(2);
 		
 		List<WebElement> species = driver.findElements(By.xpath("//ul[@class='select2-results']/li/div"));
-		int rannumber = Common.randBetween(1, 20);
+		int rannumber = Common.randBetween(1, 1);
 		Common.pause(2);
 		species.get(rannumber).click();
 	
@@ -229,7 +273,6 @@ public class CreateApplicationIndexPage extends AbstractPage {
 		
 		return new CreateApplicationVerificationPage(driver);
 	}
-	
 	
 	@FindBy(xpath="//input[@name='owls_number_of_species_number_of_animals_c']")
 	WebElement txt_number;
@@ -265,6 +308,7 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	
 		return new CreateApplicationVerificationPage(driver);
 	}
+	
 	
 	
 	/*
@@ -309,11 +353,11 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	@FindBy(xpath=".//span[text()='Contact Details']")
 	WebElement btn_Contact_detail;
 	
-	public CreateApplicationVerificationPage clickonContactDetail() {
+	public CreateApplicationVerificationPage clickonContactDetail(String fileName) {
 		// TODO Auto-generated method stub
 		Common.pause(2);
 		Common.clickOn(driver, btn_Contact_detail);
-		setContactAddress();
+		setContactAddress(fileName);
 		return new CreateApplicationVerificationPage(driver);	
 	}
 	
@@ -335,15 +379,19 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	WebElement primaryPostcode;
 	
 	
-	private void setContactAddress() {
+	private void setContactAddress(String fileName) {
 		// TODO Auto-generated method stub
 		
+		Common.writeDataProperties(fileName,"Primary_Address", primaryAddress.getAttribute("value"), "");
 		ContactAddressDetails.setPrimaryAddress(primaryAddress.getAttribute("value"));;
 		System.err.println(ContactAddressDetails.getPrimaryAddress());
+		Common.writeDataProperties(fileName,"Primary_City", primaryCity.getAttribute("value"), "");
 		ContactAddressDetails.setPrimaryCity(primaryCity.getAttribute("value"));
 		System.err.println(ContactAddressDetails.getPrimaryCity());
+		Common.writeDataProperties(fileName,"Primary_State", primaryState.getAttribute("value"), "");
 		ContactAddressDetails.setPrimaryState(primaryState.getAttribute("value"));
 		System.err.println(ContactAddressDetails.getPrimaryState());
+		Common.writeDataProperties(fileName,"Primary_Postcode", primaryPostcode.getAttribute("value"), "");
 		ContactAddressDetails.setPrimaryPostcode(primaryPostcode.getAttribute("value"));
 		System.err.println(ContactAddressDetails.getPrimaryPostcode());
 	}
@@ -435,35 +483,71 @@ public class CreateApplicationIndexPage extends AbstractPage {
 	  * Method will click on Payment Notice link and download Payment notice.
 	  */
 	 
-	 @FindBy (xpath="//a[text()='Payment Pending']//..//..//a[text()='Payment Notice']")
-	 WebElement paymentNotice;
-	 
-	public void clickonPaymentNotice() {
+	
+	public void clickonPaymentNotice(String fileName) {
 		// TODO Auto-generated method stub
 		
+		
+		 WebElement paymentNotice;
+		 String start="//a[text()='";
+		 String end="']//..//..//a[text()='Payment Notice']";
+		 String applicationSubject=Common.readProperties(fileName, "ApplicationName");
+		 paymentNotice=driver.findElement(By.xpath(start+applicationSubject+end));
+		 
 		Common.clickOn(driver, paymentNotice);
 		Common.pause(5);
 	}
 
-	/**
-	 * Method will get current numbers of permit records and write it to Property file.
-	 */
-	
-	@FindBy (xpath=".//*[@id='table-container_info']")
-	WebElement records;
+	@FindBy(xpath="//label[text()='No convictions']")
+	 WebElement radiobutton_NoConvictions;
 
-	public void currentPermitRecords() {
+	public void selectNoConviction() {
 		// TODO Auto-generated method stub
-		Common.waitForElement(driver, records);
-		String[] str=records.getText().split(" ");
-		System.err.println(" Number of String lenght :"+str.length);
-		System.err.println(" String :"+records.getText());
-		System.err.println(" get current permit string : "+str[(str.length)-2]);
-		
-		Common.writeDataProperties("Permit_records", str[(str.length)-2], "");
+		Common.clickOn(driver, radiobutton_NoConvictions);
+		Common.pause(1);
+	}
+
+	@FindBy (xpath="//label[@for='edit-have-wildlife-in-possession-c-0']")
+	WebElement noWildlifePossession;
+	
+	public void noWildLifePossession() {
+		// TODO Auto-generated method stub
+		Common.clickOn(driver, noWildlifePossession);
+		Common.pause(1);
+	}
+
+	@FindBy (xpath=".//label[text()='I agree ']")
+	WebElement iAgreeOption;
+	
+	public void chooseIAgree() {
+		// TODO Auto-generated method stub
+		Common.jsClick(driver, iAgreeOption);
+		Common.pause(2);
 	}
 	
+	@FindBy (xpath=".//label[text()='30-Sep-2020']")
+	WebElement licenceExpiry;
+
+	@FindBy (xpath=".//label[text()='30-Jun-2020']")
+	WebElement licenceExpiryDingo;
+
+	public void licenceExpiry(String applicationType) {
+		// TODO Auto-generated method stub
+		System.err.println(" Dingo Licence : "+applicationType);
+		if(applicationType.equalsIgnoreCase("Dingo Licence"))
+		{
+			System.err.println(" Digo Licence Expiry .. ");
+			Common.jsClick(driver, licenceExpiryDingo);
+		}
+		else
+		{
+			System.err.println(" Normla Licence Expriry ..!! ");
+			Common.jsClick(driver, licenceExpiry);
+		}
+	}
 	
+
 	
 }
+
 

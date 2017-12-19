@@ -6,6 +6,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.FindBy;
 import org.testng.Assert;
 
@@ -20,7 +21,7 @@ public class CreateApplicationVerificationPage extends AbstractPage{
 	
 	public static String applicationURL="";
 
-	public CreateApplicationVerificationPage(WebDriver driver) {
+	public CreateApplicationVerificationPage(RemoteWebDriver driver) {
 		super(driver);
 		// TODO Auto-generated constructor stub
 	}
@@ -41,20 +42,27 @@ public class CreateApplicationVerificationPage extends AbstractPage{
 		return bool;
 	}
 	
-	@FindBy(xpath = "//table//tbody//tr[1]/td[3]/a")
-	WebElement ApplicationStatus;
+	/**
+	 *  
+	 * @param fileName
+	 * @param application
+	 * @return
+	 */
+	public boolean VerifyCreatedApplicationStatus(String fileName, String application) {
 	
-	 @FindBy(xpath="//table//tbody//tr[1]/td[2]/a")
-	 WebElement applicationName;
+		 String start=".//a[text()='In Progress']/../..//a[text()='";
+		 String end="']";
+		 String end2="']/../../td[3]/a";
+		 WebElement applicationStatus = driver.findElement(By.xpath(start+application+end));
+		 System.err.println(start+application+end);
+		 WebElement applicationName=driver.findElement(By.xpath(start+application+end2));
+		 System.err.println(start+application+end2);
+		Common.writeProperties(fileName,"ApplicationName", applicationName.getText(), "Store Application Subject ");
 	
-	public boolean VerifyCreatedApplicationStatus() {
-	
-		Common.writeDataProperties("ApplicationName", applicationName.getText(), "Store Application Subject ");
-
-		return ApplicationStatus.getAttribute("href").contains(applicationURL) 
-				&& ApplicationStatus.getText().contains("In Progress");
+		return Common.isElementDisplayed(applicationStatus);
 		
 	}
+	
 	
 	/*
 	 * Method to verify Specified Permises and Postal address pasted correctly upon selecting "SAME AS ABOVE option
@@ -72,16 +80,12 @@ public class CreateApplicationVerificationPage extends AbstractPage{
 	@FindBy (xpath=".//input[@id='edit-operating-address-postalcode']")
 	WebElement operatingPostcode;
 
-	public boolean verifyOperatingAddress() {
+	public boolean verifyOperatingAddress(String dataFileName) {
 		// TODO Auto-generated method stub
-		
-		System.err.println(ContactAddressDetails.getPrimaryAddress()+"--"+ContactAddressDetails.getPrimaryPostcode()+"--"+ContactAddressDetails.getPrimaryState()+"--"+ContactAddressDetails.getPrimaryCity());
-		System.out.println(operatingAddressStreet.getAttribute("value")+operatingCity.getAttribute("value")+operatingState.getAttribute("value")+operatingPostcode.getAttribute("value"));
-		
-		if (ContactAddressDetails.primaryAddress.equalsIgnoreCase(operatingAddressStreet.getAttribute("value"))
-				&& ContactAddressDetails.primaryCity.equalsIgnoreCase(operatingCity.getAttribute("value"))
-				&& ContactAddressDetails.primaryState.equalsIgnoreCase(operatingState.getAttribute("value"))
-				&& ContactAddressDetails.primaryPostcode.equalsIgnoreCase(operatingPostcode.getAttribute("value")))
+		if (Common.readDataProperties(dataFileName, "Primary_Address").equalsIgnoreCase(operatingAddressStreet.getAttribute("value"))
+				&& Common.readDataProperties(dataFileName, "Primary_City").equalsIgnoreCase(operatingCity.getAttribute("value"))
+				&& Common.readDataProperties(dataFileName, "Primary_State").equalsIgnoreCase(operatingState.getAttribute("value"))
+				&& Common.readDataProperties(dataFileName, "Primary_Postcode").equalsIgnoreCase(operatingPostcode.getAttribute("value")))
 		{
 			return true;
 		}
@@ -116,7 +120,7 @@ public class CreateApplicationVerificationPage extends AbstractPage{
 	public boolean verifySpeciesTable() {
 		// TODO Auto-generated method stub
 		
-		WebElement speciesLineItem=driver.findElement(By.xpath("//*[@id='edit-owls-number-of-species-table']//span[text()='"+WildlifePossession.getSpecies()+"']"));
+		WebElement speciesLineItem=driver.findElement(By.xpath("//*[@id='edit-owls-number-of-species-table']//span[text()=\""+WildlifePossession.getSpecies()+"\"]"));
 		WebElement speciesNumber=driver.findElement(By.xpath("//*[@id='edit-owls-number-of-species-table']//span[text()='"+WildlifePossession.getSpecies()+"']//..//..//td[3]//span"));
 		WebElement speciesAlive_Dead=driver.findElement(By.xpath("//*[@id='edit-owls-number-of-species-table']//span[text()='"+WildlifePossession.getSpecies()+"']//..//..//td[4]//span"));
 		
@@ -171,6 +175,85 @@ public class CreateApplicationVerificationPage extends AbstractPage{
 	public boolean verifyPaymentPendingApplication() {
 		// TODO Auto-generated method stub
 		return Common.isElementDisplayed(payFee) && Common.isElementDisplayed(paymentNotice);
+	}
+
+	/**
+	 * Method will verify User's Primary address from pdf content.
+	 * @param pdfText contains extracted pdf 
+	 * @return boolean
+	 */
+	public boolean verifyAddressFromPDF(String fileName,String pdfText) {
+		// TODO Auto-generated method stub
+		try
+		{
+			return pdfText.contains(Common.readDataProperties(fileName,"Primary_Address"));
+		}
+		catch(Exception e)
+		{
+			Common.logstep(e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * Method will get the application name which is in 'Payment Pending' status and get the application name and write it to property file.
+	 * @param fileName
+	 * @param application
+	 * @return boolean
+	 */
+	public boolean verifyCreatedApplicationStatus(String fileName, String application) {
+		
+		 String start=".//a[text()='";
+		 String end="']/../..//a[text()='Payment Pending']";
+		 String end2="/../../td[3]/a";
+		 WebElement applicationstatus=driver.findElement(By.xpath(start+application+end));
+		 WebElement applicationName=driver.findElement(By.xpath(start+application+end+end2));
+
+		Common.writeDataProperties(fileName,"ApplicationName", applicationName.getText(), "Store Application Subject ");
+	
+		return Common.isElementDisplayed(applicationstatus);
+		
+	}
+	
+	@FindBy (xpath=".//h4[contains(text(),'WARNING')]")
+	WebElement warningPopup;
+
+	public boolean verifyWarningPopup() {
+		// TODO Auto-generated method stub
+		return Common.isElementDisplayed(warningPopup);
+	}
+	@FindBy (xpath=".//p[contains(text(),'You can not apply the Advanced Application because the Basic Application is already exists.')]")
+	WebElement warningMessage;
+
+	@FindBy (xpath=".//div[@class='modal-body']//p")
+	WebElement warningMessageContent;
+	
+	public boolean verifyWarningMessage() {
+		// TODO Auto-generated method stub
+		
+		Common.log(" Warning Message : "+warningMessageContent.getText());
+		return Common.isElementDisplayed(warningMessage);
+	}
+
+	@FindBy (xpath=".//button[text()='OK']")
+	WebElement OkButton;
+	
+	@FindBy (xpath=".//button[text()='Cancel']")
+	WebElement CancelButton;
+	
+	public boolean verifyButtons() {
+		// TODO Auto-generated method stub
+		return Common.isElementDisplayed(OkButton) && Common.isElementDisplayed(CancelButton);
+	}
+	
+	@FindBy (xpath=".//h2[@class='visually-hidden']/../../div")
+	WebElement errorMessage;
+
+	public boolean verifyValidationError() {
+		// TODO Auto-generated method stub
+		Common.log(errorMessage.getText());
+		
+		return Common.isElementDisplayed(errorMessage);
 	}
 
 	

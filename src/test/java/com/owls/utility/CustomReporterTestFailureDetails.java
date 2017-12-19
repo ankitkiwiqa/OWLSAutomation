@@ -34,8 +34,6 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
-
-
 public class CustomReporterTestFailureDetails extends CustomReporterListener {
 
 	private static final Logger L = Logger
@@ -99,8 +97,8 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 	 * , "Connection may be refused by the node/server."); }
 	 */
 
-	public CustomReporterTestFailureDetails() {
-		super();
+	public void CustomReporterTestFailureDetails() {
+		//super();
 		map.put("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure.",
 				"Server or Node is not running.");
 		map.put("Timed out after 35 seconds waiting for visibility of Proxy element",
@@ -207,8 +205,6 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 				System.out.println("Passed---");
 				resultSummary_passed(suite, testContext.getPassedTests(), testName,
 						"passed", "");
-				resultSummarypassed(suite, testContext.getPassedTests(), //5.4
-						testName, "passed", " (configuration methods)");
 				System.out.println("Failed---");
 				resultSummary(suite, testContext.getFailedConfigurations(), //5.4
 						testName, "failed", " (configuration methods)");
@@ -218,8 +214,6 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 			
 				resultSummary_skipped(suite, testContext.getSkippedTests(), testName,
 						"skipped", "");
-				resultSummarypassed(suite, testContext.getSkippedTests(), //5.4
-						testName, "passed", " (configuration methods)");
 
 				/*
 				 * resultSummary(suite, testContext.getSkippedConfigurations(),
@@ -235,7 +229,7 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 			
 		}
 		endHtml(m_out);
-		testCaseNo();
+		//testCaseNo();
 		m_out.println("</table>");
 	}
 
@@ -269,10 +263,10 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 //				+ skipped + "<br/></h3></td>");
 		
 		m_out.println(
-				"<table width='350px' height='30px' border='1' align='left'><tbody><tr colspan='2'><td bgcolor='#0088cc' colspan='2'><h3><center><font color='white'>Build Summary</font></center></h3></td></tr><tr bgcolor='#b1edc0'><td><b>"
+				"<table width='350px' height='30px' border='1' align='left'><tbody><tr colspan='2'><td bgcolor='#0088cc' colspan='2'><h3><center><font color='white'>Build Summary</font></center></h3></td></tr><tr><td><b>"
 				+ "Passed Test cases</b>   </td> <td> <center><b>"
 						+ passed + "</b></center></td></tr><tr><td><b> Failed Test Cases </b></td><td> <center><b>" + (failedcount)
-						+ "</b></center></td></tr> 	 <tr bgcolor='#fcf77a'><td><b>Skipped Test cases</b>   </td><td><center><b> " + skipped
+						+ "</b></center></td></tr> 	 <tr><td><b>Skipped Test cases</b>   </td><td><center><b> " + skipped
 						+ "</b></center> </td></tr><tr bgcolor='skyblue'><td> <b>Total Test Cases </b>  </td><td> <center><b>" + qty_tests
 						+ "</b></center></td></tr></tbody></table>");
 	}
@@ -308,14 +302,13 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 //			}
 //			}
 //	}
-	ArrayList<String> skippedTestCases = new ArrayList<String>();
+	
 	private void resultSummary_skipped(ISuite suite, IResultMap tests, String testname,
 			String style, String details) { //5.4.1
 
 		if (tests.getAllResults().size() > 0) {
 
 			for (ITestNGMethod method : getMethodSet(tests, suite)) {
-				skippedTestCases.add(testname);
 				skipped++;
 			}
 			}
@@ -461,134 +454,6 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 
 	}
 	
-	
-	
-	ArrayList<String> testArraypassed = new ArrayList<String>();
-
-	
-	private void resultSummarypassed(ISuite suite, IResultMap tests, String testname,
-			String style, String details) { //5.4.1
-
-		if (tests.getAllResults().size() > 0) {
-
-			StringBuffer buff = new StringBuffer();
-			String lastClassName = "";
-			int mq = 0;
-			int cq = 0;
-			for (ITestNGMethod method : getMethodSet(tests, suite)) {
-				
-				//failedcount++;
-			if(!checkTestCasespassed(testname) && (isPassed(testname) || isskipped(testname)))
-			{
-				testArraypassed.add(testname);
-				m_row += 1;
-				m_methodIndex += 1;
-				ITestClass testClass = method.getTestClass();
-				String className = testClass.getName();
-				// if (mq == 0)
-				{
-					String id = (m_testIndex == null ? null : "test"
-							+ Integer.toString(m_testIndex));
-					// titleRow(testname + " &#8212; " + style + details, 5,
-					// id);
-					//
-					num=m_testIndex;
-					
-					
-					m_out.print("<tr");
-					if (id != null) {
-						//m_out.print(" id=\"" + id + "\"");
-						id1=id;
-					}
-					m_out.println("><td width='25%' style=\"font-size:14px; font-family:Times New Roman;background-color:##aae2c4\">" + testname + "</td>");
-					
-					m_row = 0;
-					
-					//
-					m_testIndex = null;
-					namecount++;
-					//failedcount++; //perivious
-				}
-
-				/*
-				 * if (!className.equalsIgnoreCase(lastClassName)) { if (mq > 0)
-				 * { cq += 1; m_out.print("<tr class=\"" + style + (cq % 2 == 0
-				 * ? "even" : "odd") + "\">" + "<td"); if (mq > 1) {
-				 * m_out.print(" rowspan=\"" + mq + "\""); } m_out.println(">" +
-				 * lastClassName + "</td>" + buff);
-				 * 
-				 * } mq = 0; buff.setLength(0); lastClassName = className; }
-				 */
-				Set<ITestResult> resultSet = tests.getResults(method);
-				long end = Long.MIN_VALUE;
-				long start = Long.MAX_VALUE;
-				for (ITestResult testResult : tests.getResults(method)) {
-					if (testResult.getEndMillis() > end) {
-						end = testResult.getEndMillis();
-					}
-					if (testResult.getStartMillis() < start) {
-						start = testResult.getStartMillis();
-					}
-				}
-				mq += 1;
-				if (mq > 1) {
-					/*
-					 * buff.append("<tr class=\"" + style + (cq % 2 == 0 ? "odd"
-					 * : "even") + "\">");
-					 */
-				}
-
-				if (mq > 0) {
-					cq += 1;
-					/*
-					 * m_out.print("<td"); if (mq > 1) {
-					 * m_out.print(" rowspan=\"" + mq + "\""); }
-					 * m_out.println(">" + lastClassName + "</td>");
-					 */
-
-					if(isskipped(testname))
-					{
-						getPass(tests,num,id1,"#fcf77a");
-					}else{
-						getPass(tests,num,id1,"#b1edc0");
-					}
-					
-					
-
-				}
-
-				String description = method.getDescription();
-				String testInstanceName = resultSet
-						.toArray(new ITestResult[] {})[0].getTestName();
-				/*
-				 * buff.append("<td class=\"numi\"><center>" + (end -
-				 * start)/1000 + "</center></td>" + "</tr>" );
-				 */
-				m_out.println("<td width='5%' class=\"numi\"><center>" + (end - start)
-						/ 1000 + "</center></td>" + "");
-
-			}//to check test name
-			
-			}
-			/*
-			 * if (mq > 0) { cq += 1; m_out.print("<tr class=\"" + style + (cq %
-			 * 2 == 0 ? "even" : "odd") + "\">" + "<td"); if (mq > 1) {
-			 * m_out.print(" rowspan=\"" + mq + "\""); } m_out.println(">" +
-			 * lastClassName + "</td>" + buff); }
-			 */
-			//
-
-		}
-		System.out.println("Test Cases No. : " + namecount);
-
-	}
-	
-	public boolean checkTestCasespassed(String testName)
-	{
-		
-		return testArraypassed.contains(testName);
-	}
-	
 	public boolean checkTestCases(String testName)
 	{
 		
@@ -600,29 +465,25 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 		return PassedTestCases.contains(testName);
 	}
 	
-	public boolean isskipped(String testName)
-	{
-		return skippedTestCases.contains(testName);
-	}
-	
 	/** Starts and defines columns result summary table */
 	private void startResultSummaryTable(String style) {  //5.2.1
 		tableStart(style, "summary");
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a z,MM/dd/yyyy");
 
-		m_out.println("<tr><td bgcolor='white' colspan='4'> <table border='0' width='100%' bgcolor='#e6f7ff'><tr>"
+		/*m_out.println("<tr><td bgcolor='white' colspan='4'> <table border='0' width='100%' bgcolor='#e6f7ff'><tr>"
 				+ "<td  width='25%'  bgcolor='white'>"
 				+ "<center><img width='150px' src='http://www.kiwiqa.com/wp-content/themes/twentythirteen/images/logo.png'/></center>"
 				+ "</td><td ><center><font color='#008bcc'><b><h1>Failed Test Cases Analysis</h1></b></font></center></td> "
 				+ "<td width='25%' bgcolor='white'>"
 				+ "<center><img width='150px' src='http://www.genixventures.com/wp-content/uploads/2015/05/genix_logo_03.png'/></center></td> "
-				+ "</tr></table> </td></tr>");
+				+ "</tr></table> </td></tr>");*/
 		//m_out.println("<tr><td colspan='4'>To view Full Report : <a href=\"http://localhost:8080/job/Videogram/HTML_Report/\">http://localhost:8080/job/Videogram_Chrome/HTML_Report</a></td></tr>");
-		m_out.println("<tr><td colspan='4'>Overall test suite completion : <b>"
+		/*m_out.println("<tr><td colspan='4'>Overall test suite completion : <b>"
 				+ Time + " minutes</b><br/> Date and Time of Run: <b>"
-				+ sdf.format(date) + "</b><br/> Browser : <b> <t></t> </b><br/>OS: <b>"
-				+ System.getProperty("os.name") + "</b></td></tr>");
+				+ sdf.format(date) + "</b><br/> Browser : <b>"+SeleniumInit.browsernm+"<t></t>"
+				+ SeleniumInit.browserVersion +  "</b><br/>OS: <b>"
+				+ System.getProperty("os.name") + "</b></td></tr>");*/
 		m_out.println("<tr bgcolor='SkyBlue'><th>Test Cases</th><th>Steps</th>"
 				+ "<th>Failure Reason</th><th>Total Time<br/>(sec.)</th>");
 		m_row = 0;
@@ -659,9 +520,13 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 
 		}
 	}
-	
-	
-	private void getPass(IResultMap tests, int num, String id,String color) {
+
+	/**
+	 * Write the first line of the stack trace
+	 * 
+	 * @param tests
+	 */
+	private void getShortException(IResultMap tests, int num, String id) {
 
 		
 	
@@ -672,16 +537,16 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 			List<String> msgs = Reporter.getOutput(result);
 			boolean hasReporterOutput = msgs.size() > 0;
 			
-			//String str = Utils.stackTrace(exception, true)[0];
-		//	scanner = new Scanner(str);
-			//String firstLine = scanner.nextLine();
+			String str = Utils.stackTrace(exception, true)[0];
+			scanner = new Scanner(str);
+			String firstLine = scanner.nextLine();
 			
 			m_out.println("<td width='50%'");
 			
 			for (String line : msgs) {
 				if(g==0)
 				{
-					m_out.println(" style=\"background-color:"+color+"\"><b id=\""+id+"\">");
+					m_out.println(" style=\"background-color:#fae7e6\"><b id=\""+id+"\">");
 					m_out.println("<a href=\"#hide"+num+"\" data-toggle=\"tooltip\" title=\"Click here to see list of steps\" class=\"hide\" id=\"hide"+num+"\">+</a>");
 					m_out.println("<a href=\"#show"+num+"\" class=\"show\" id=\"show"+num+"\">-</a></b> &nbsp;&nbsp;Click here to see list of steps</br></br>");
 									
@@ -709,102 +574,14 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 				m_out.println("<td width='15%'>");
 				for (Entry<String, String> e : map.entrySet()) {
 
-					/*if (firstLine.contains(e.getKey())) {
+					if (firstLine.contains(e.getKey())) {
 						// m_out.print(map.get(str));
 						// m_out.print("contains <br/>");
 						m_out.print(e.getValue() + "<br/>");
 					} else {
 						// m_out.print("Not contains <br/>");
 						// m_out.print(str+"<br/>");
-					}*/
-				}
-
-				m_out.println("</td>");
-
-				/*
-				 * if(map.containsKey(str)) { m_out.print(map.get(str)); }else{
-				 * m_out.print("Not contains"); m_out.print(str); }
-				 */
-
-			/*	m_out.println("<td width='15%'>");
-				boolean wantsMinimalOutput = result.getStatus() == ITestResult.SUCCESS;
-				if (hasReporterOutput) {
-					m_out.print("<h3>"
-							+ (wantsMinimalOutput ? "Expected Exception"
-									: "Failure") + "</h3>");
-				}
-
-				// Getting first line of the stack trace
-
-				m_out.println(firstLine);
-				m_out.println("</td>");*/
-			}
-
-		}
-	}
-
-	/**
-	 * Write the first line of the stack trace
-	 * 
-	 * @param tests
-	 */
-	private void getShortException(IResultMap tests, int num, String id) {
-
-		
-	
-		for (ITestResult result : tests.getAllResults()) {
-			m_methodIndex++;
-			
-			Throwable exception = result.getThrowable();
-			List<String> msgs = Reporter.getOutput(result);
-			boolean hasReporterOutput = msgs.size() > 0;
-			
-			//String str = Utils.stackTrace(exception, true)[0];
-		//	scanner = new Scanner(str);
-			//String firstLine = scanner.nextLine();
-			
-			m_out.println("<td width='50%'");
-			
-			for (String line : msgs) {
-				if(g==0)
-				{
-					
-					m_out.println(" style=\"background-color:#fae7e6\"><b id=\""+id+"\">");
-					m_out.println("<a href=\"#hide"+num+"\" data-toggle=\"tooltip\" title=\"Click here to see list of steps\" class=\"hide\" id=\"hide"+num+"\">+</a>");
-					m_out.println("<a href=\"#show"+num+"\" class=\"show\" id=\"show"+num+"\">-</a></b> &nbsp;&nbsp;Click here to see list of steps</br></br>");
-					m_out.println("<table id=\"t"+num+"\" style=\"display: none;\"><tr><td>");
-				
-				}
-				else
-				{
-					m_out.println(line+"");
-				}
-					g++;
-					if(msgs.size()==g)
-					m_out.println("</td></tr></table></td>");
-			}
-			
-			if(g==0||g==1){
-			m_out.println("style=\"background-color:#fcf77a\"><b><font color='Blue'>Skipped</font></b></br>");
-		    //m_out.println(firstLine);
-			}
-				
-			m_out.println("</td>");
-			g=0;
-			boolean hasThrowable = exception != null;
-			if (hasThrowable) {
-
-				m_out.println("<td width='15%'>");
-				for (Entry<String, String> e : map.entrySet()) {
-
-					/*if (firstLine.contains(e.getKey())) {
-						// m_out.print(map.get(str));
-						// m_out.print("contains <br/>");
-						m_out.print(e.getValue() + "<br/>");
-					} else {
-						// m_out.print("Not contains <br/>");
-						// m_out.print(str+"<br/>");
-					}*/
+					}
 				}
 
 				m_out.println("</td>");
@@ -1151,6 +928,7 @@ public class CustomReporterTestFailureDetails extends CustomReporterListener {
 
 		/** Arranges methods by classname and method name */
 
+		@Override
 		public int compare(IInvokedMethod o1, IInvokedMethod o2) {
 			// System.out.println("Comparing " + o1.getMethodName() + " " +
 			// o1.getDate()

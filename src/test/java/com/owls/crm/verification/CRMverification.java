@@ -2,20 +2,31 @@ package com.owls.crm.verification;
 
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.FindBy;
 
+import com.owls.crm.index.CRMIndex;
+import com.owls.crm.indexpage.CRMIndexpage;
 import com.owls.init.AbstractPage;
 import com.owls.init.Common;
+import com.owls.utility.CustomeDateConverter;
+
+import ch.qos.logback.classic.pattern.DateConverter;
 
 
 public class CRMverification extends AbstractPage  {
 
 
-	public CRMverification(WebDriver driver) {
+	public CRMverification(RemoteWebDriver driver) {
 		super(driver);
 		// TODO Auto-generated constructor stub
 	}
@@ -27,10 +38,17 @@ public class CRMverification extends AbstractPage  {
 	
 	@FindBy (xpath=".//span[@id='validation_errors_c']")
 	WebElement validationError;
+	
+	@FindBy(xpath=".//span[@id='validation_errors_c']")
+	WebElement validation;
 
 	public boolean verifyValidationError() {
 		// TODO Auto-generated method stub
 		Common.SwitchtoTab(driver, 2);
+		if(!Common.isElementDisplayed(validation))
+		{
+			driver.navigate().refresh();
+		}
 		
 		return validationError.getText().contains("Documents") || validationError.getText().contains("Wildlife in possession") || validationError.getText().contains("conviction");
 		
@@ -97,7 +115,7 @@ public class CRMverification extends AbstractPage  {
 		System.err.println(applicationName + "=====" + ApplicationSubject);
 		System.err.println(queue + "===" + "Wildlife Licensing Queue");
 		
-		return applicationStatus.replace(" ","").contains(applicationStatustoMatch.replace(" ",""))
+		return applicationStatus.contains(applicationStatustoMatch)
 				&& applicationName.toLowerCase().contains(ApplicationSubject.toLowerCase())
 				&& queue.contains(applicationQueue);
 
@@ -109,14 +127,14 @@ public class CRMverification extends AbstractPage  {
 	 * @return boolean
 	 */
 	
-	public boolean verifyInspectionComment() {
+	public boolean verifyInspectionComment(String fileName) {
 		// TODO Auto-generated method stub
 		String start=".//table[@id='inspecting_officer_screen']//td[contains(text(),'";
 		String end="')]";
-		String comment=Common.readDataProperties("Comment");
-		String concern=Common.readDataProperties("Concern_Comment");
-		System.err.println(Common.readDataProperties("Comment")+"\n ========== "+start+comment+end);
-		System.err.println(Common.readDataProperties("Concerns")+"\n ========== "+start+concern+end);
+		String comment=Common.readDataProperties(fileName,"Comment");
+		String concern=Common.readDataProperties(fileName,"Concern_Comment");
+		System.err.println(Common.readDataProperties(fileName,"Comment")+"\n ========== "+start+comment+end);
+		System.err.println(Common.readDataProperties(fileName,"Concerns")+"\n ========== "+start+concern+end);
 
 		WebElement commentText=driver.findElement(By.xpath(start+comment+end));
 		WebElement concernsText=driver.findElement(By.xpath(start+concern+end));
@@ -149,14 +167,74 @@ public class CRMverification extends AbstractPage  {
 	@FindBy (xpath=".//*[@id='table-container_info']")
 	WebElement records;
 	
-	public boolean verifyNumberOfPermitRecordss() {
+	public boolean verifyNumberOfPermitRecordss(String fileName) {
 		// TODO Auto-generated method stub
 		Common.waitForElement(driver, records);
 		String[] str=records.getText().split(" ");
 		
 		System.err.println(" String "+str[(str.length)-2]);
-		System.err.println(" Permit property : "+Common.readDataProperties("Permit_records"));
-		return str[(str.length)-2].equalsIgnoreCase(Common.readDataProperties("Permit_records"));
+		System.err.println(" Permit property : "+Common.readDataProperties(fileName,"Permit_records"));
+		return str[(str.length)-2].equalsIgnoreCase(Common.readDataProperties(fileName,"Permit_records"));
+	}
+	
+	@FindBy (xpath=".//div[@id='myTabs1']//li[text()='Inspections']")
+	WebElement inspection_link;
+	
+	@FindBy (xpath=".//div[@id='inspinner']//tr")
+	List<WebElement> table_Row;
+
+	
+	@FindBy (xpath=".//div[@id='inspinner']//td[text()='Site Inspection']")
+	WebElement method;
+	
+	public boolean verifyInspectionRecord(String dataFileName) throws ParseException {
+		// TODO Auto-generated method stub
+		String start=".//div[@id='inspinner']//a[text()='";
+		String end="']";
+		String end2="//..//..//td[3]";
+		Common.log(" Click on 'Inspection Tab'.");
+		Common.jsClick(driver, inspection_link);
+		Common.pause(5);
+		String date=CustomeDateConverter.convertDate(Common.readDataProperties(dataFileName, "Assessment_On"));
+		System.err.println("  Date Converted === "+date);
+		Common.pause(3);
+		WebElement date_record=driver.findElement(By.xpath(start+date+end));
+		List<WebElement> comment_table=driver.findElements(By.xpath(start+date+end+end2));
+		System.err.println(" Comment value : "+comment_table.get(0).getText());
+		
+		Common.moveToElementByJs(driver, date_record);
+		if(Common.isElementDisplayed(date_record))
+		{
+			Common.log(" Record Added on Date : "+date);
+		}
+		
+		Common.moveToElementByJs(driver, method);
+		if( Common.isElementDisplayed(method))
+		{
+			Common.log(" Inspection Method : "+method.getText());
+		}
+		
+		System.err.println(" Number of records : "+table_Row.size());
+		return (table_Row.size() > 0 && Common.isElementDisplayed(date_record) && Common.isElementDisplayed(method) && comment_table.get(0).getText().contains(Common.readDataProperties(dataFileName, "Comment")));
+	}
+
+	@FindBy (xpath=".//table[@id='predefinedtable']//tr")
+	List<WebElement> condition_row;
+
+	public boolean verifyTableRowCount() {
+		// TODO Auto-generated method stub
+		System.err.println("Before  : "+CRMIndexpage.comment_count);
+		System.err.println("After : "+ condition_row.size());
+
+		if(CRMIndexpage.comment_count < condition_row.size())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
 	}
 
 		

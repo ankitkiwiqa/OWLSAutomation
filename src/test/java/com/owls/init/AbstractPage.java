@@ -1,6 +1,7 @@
 package com.owls.init;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.pagefactory.ElementLocatorFactory;
@@ -17,7 +18,7 @@ public abstract class AbstractPage extends SeleniumInit {
 	 * @param Driver
 	 *            .
 	 */
-	public AbstractPage(WebDriver driver) {
+	public AbstractPage(RemoteWebDriver driver) {
 		this.driver = driver;
 		
 		ElementLocatorFactory finder = new AjaxElementLocatorFactory(driver,

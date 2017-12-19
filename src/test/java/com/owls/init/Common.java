@@ -4,12 +4,14 @@ package com.owls.init;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,13 +19,18 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
@@ -33,6 +40,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -307,35 +315,40 @@ public class Common {
 	public static void logstep(String msg) {
 		System.out.println(msg);
 		Reporter.log("<br><strong>" + msg + "</strong></br>");
+	}
+	
+	public static void optionalAssertPassed() {
+		System.out.println();
+		Reporter.log("<strong> <h3 style=\"color:DarkGreen\">  &#10004; <i>  SUCCESSFUL </i></h3> </strong> ");
 
 	}
 	
-	public static void assertPassed(String msg) {
+	public static void optionalAssertFailed() {
+		System.out.println();
+		Reporter.log("<strong> <h3 style=\"color:DarkRed\"> &#10008; <i> UNSUCCESSFUL </i></h3> </strong>");
+
+	}
+
+	
+	public static void logOptionalAssert(String msg) {
 		System.out.println(msg);
-		Reporter.log("<br><strong> <h3 style=\"color:DarkGreen\">" + msg + "</h3> </strong> </br>");
+		Reporter.log("<h3><b style='color:#E27A12'>&nbsp;&nbsp;&nbsp;"+msg + "</h3></b>");
 
 	}
 	
-	public static void assertFailed(String msg) {
+	public static void logMandetoryAssert(String msg) {
 		System.out.println(msg);
-		Reporter.log("<br><strong> <h3 style=\"color:DarkRed\">" + msg + "</h3> </strong> </br>");
-
-	}
-
-	public static void logverification(String msg) {
-		System.out.println(msg);
-		Reporter.log("</br><b style='color:#006699'>&nbsp;&nbsp;&nbsp;"+msg + "</b>");
+		Reporter.log("<h3><b style='color:#1466B8'>&nbsp;&nbsp;&nbsp;"+msg + "</h3></b>");
 
 	}
 
 	public static void logStatus(String Status) {
            System.out.println(Status);
 		if (Status.equalsIgnoreCase("Pass")) {
-			log("<br><Strong><font color=#008000>Pass</font></strong></br>");
+			log("<hr size='15px' noshade color='green'>");
 		} else if (Status.equalsIgnoreCase("Fail")) {
-			log("<br><Strong><font color=#FF0000>Fail</font></strong></br>");
+			log("<hr size='15px' noshade color='red'>");
 		}
-
 	}
 
 	/**
@@ -351,7 +364,7 @@ public class Common {
 			String link_text) {
 
 		log("<br><Strong><font color=#FF0000>--Failed</font></strong>");
-		return "<a href='../test-output/screenshots/" + screenshot_name
+		return "<a href='screenshots/" + screenshot_name
 				+ "' target='_new'>" + link_text + "</a>";
 	}
 
@@ -539,6 +552,7 @@ System.out.println("***********************");
 			String value) {
 		Select select = new Select(element);
 		select.selectByVisibleText(value);
+		
 	}
 	
 	/**
@@ -609,6 +623,11 @@ System.out.println("***********************");
 		return random;
 	}
 
+	public static String generateRandomNumeric(int length) {
+		String random = RandomStringUtils.randomNumeric(length);
+		return random;
+	}
+	
 	/**
 	 * Generate Random Number in Length
 	 * 
@@ -788,6 +807,11 @@ System.out.println("***********************");
 		webElement.sendKeys(value);
 	}
 
+	public static void type1(WebElement webElement, String value) {
+	
+		webElement.sendKeys(value);
+	}
+	
 	/**
 	 * Wait till all ajax calls finish.
 	 * 
@@ -1102,10 +1126,10 @@ System.out.println("***********************");
 	}
 
 	
-	public static String readProperties(String propertieName)
+	public static String readProperties(String fileName,String propertieName)
 	 {
 	    String result="";
-	    File file = new File("Data/config.properties");
+	    File file = new File("Data/"+fileName+".properties");
 	    FileInputStream fileInput = null;
 	    try {
 	     fileInput = new FileInputStream(file);
@@ -1125,7 +1149,7 @@ System.out.println("***********************");
 	    return result;
 	 }
 	 
-	 public static void writeProperties(String propertieName,String propertieValue,String Comment)
+	 public static void writeProperties(String fileName,String propertieName,String propertieValue,String Comment)
 	 {
 		  Properties propwrite = new Properties();
 		    
@@ -1134,11 +1158,11 @@ System.out.println("***********************");
 	       propwrite.setProperty(propertieName, propertieValue);
 	  
 	       //save properties to project root folder
-	       if(propertieName.contains("Application_Created_Sucessfully"))
+	       if(propertieName.contains("ApplicationName"))
 	       {
-	        propwrite.store(new FileOutputStream("Data/config.properties",false), Comment);
+	        propwrite.store(new FileOutputStream("Data/"+fileName+".properties",false), Comment);
 	       }else{
-	        propwrite.store(new FileOutputStream("Data/config.properties",true), Comment);
+	        propwrite.store(new FileOutputStream("Data/"+fileName+".properties",true), Comment);
 	       }
 	      
 	  
@@ -1169,10 +1193,10 @@ System.out.println("***********************");
 	  driver.switchTo().window(tabs.get(tabNumber));
 	 }
 	 
- public static String readDataProperties(String propertieName)
+	 public static String readDataProperties(String fileName,String propertieName)
 	 {
 	    String result="";
-	    File file = new File("Data/applicationData.properties");
+	    File file = new File("Data/"+fileName+".properties");
 	    FileInputStream fileInput = null;
 	    try {
 	     fileInput = new FileInputStream(file);
@@ -1192,7 +1216,7 @@ System.out.println("***********************");
 	    return result;
 	 }
 	 
-	 public static void writeDataProperties(String propertieName,String propertieValue,String Comment)
+	 public static void writeDataProperties(String fileName,String propertieName,String propertieValue,String Comment)
 	 {
 		 Properties propwrite = new Properties();
 		    
@@ -1201,11 +1225,11 @@ System.out.println("***********************");
 	       propwrite.setProperty(propertieName, propertieValue);
 	  
 	       //save properties to project root folder
-	       if(propertieName.contains("ApplicationName"))
+	       if(propertieName.contains("Primary_Address"))
 	       {
-	        propwrite.store(new FileOutputStream("Data/applicationData.properties",false), Comment);
+	        propwrite.store(new FileOutputStream("Data/"+fileName+".properties",false),"");
 	       }else{
-	        propwrite.store(new FileOutputStream("Data/applicationData.properties",true), Comment);
+	        propwrite.store(new FileOutputStream("Data/"+fileName+".properties",true),"");
 	       }
 	      
 	  
@@ -1213,5 +1237,20 @@ System.out.println("***********************");
 	       ex.printStackTrace();
 	         }
 	 }
-	
+	 
+	 public static File getTheNewestFile(String filePath, String ext) {
+	     File theNewestFile = null;
+	     File dir = new File(filePath);
+	     FileFilter fileFilter = new WildcardFileFilter("*." + ext);
+	     File[] files = dir.listFiles(fileFilter);
+
+	     if (files.length > 0) {
+	         /* The newest file comes first */
+	         Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+	         theNewestFile = files[0];
+	     }
+
+	     return theNewestFile;
+	 }
+	 
 }

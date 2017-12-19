@@ -7,7 +7,7 @@ public class RetryTest implements IRetryAnalyzer
 {
 
 	 private int retryCounter = 0;
-	 private int maxRetryCounter = 2;
+	 private int maxRetryCounter = 1;
 
 	 /**
 	  * Manage Retry Counter.

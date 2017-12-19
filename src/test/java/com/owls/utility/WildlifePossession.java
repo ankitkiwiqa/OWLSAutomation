@@ -22,7 +22,5 @@ public class WildlifePossession {
 	}
 	public static void setAlive_dead(String alive_dead) {
 		WildlifePossession.alive_dead = alive_dead;
-	}
-
-	
+	}	
 }
